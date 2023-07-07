@@ -1,0 +1,554 @@
+﻿
+
+input {
+    padding: 10px !important;
+}
+
+select {
+    padding: 10px !important;
+}
+
+#RoomStlye {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: xx-large;
+    height: 60px;
+    width: 200px;
+    border: 4px solid black;
+    box-shadow: 4px 4px 4px black;
+    margin: 20px 20px;
+    border-radius: 5px;
+    position: relative;
+}
+
+    #RoomStlye a {
+        text-shadow: 2px 2px 2px black,-2px 2px 2px black,2px -2px 2px silver,-2px -2px silver;
+        letter-spacing: 5px;
+        color: silver;
+        transition: 0.1s;
+    }
+
+        #RoomStlye a:hover {
+            color: wheat;
+            transition: 0.1s;
+        }
+
+.PaymentStatementImage {
+    position: absolute;
+    left: 2px;
+    top: 5px;
+    height: 40px;
+    width: 40px;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+.RoomCleanButton {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 30px;
+    width: 30px;
+}
+
+.RoomIsClean {
+    background-image: linear-gradient(135deg,transparent, transparent 50%, aqua 50%, white 100%);
+}
+
+.RoomIsDirty {
+    background-image: linear-gradient(135deg,transparent, transparent 50%, gold 50%, brown 100%);
+}
+
+a {
+    text-decoration: none;
+}
+
+
+td, tr {
+    border: 2px solid #202040;
+    vertical-align: middle;
+    text-align: center;
+}
+
+
+
+#VisitorButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: larger;
+    font-weight: 500;
+    color: silver;
+    background-image: linear-gradient(#202040,#00337C);
+    height: 50px;
+    width: 150px;
+    transition: 0.4s;
+    user-select: none;
+    border: 3px solid black;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 2px 2px 4px black;
+    font-weight:500;
+    cursor: pointer;
+}
+
+    #VisitorButton:hover {
+        color: black;
+        transition: 0.4s;
+    }
+
+    #VisitorButton::after {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        height: 50px;
+        width: 150px;
+        background-color: white;
+        color: black;
+        left: -150px;
+        transition: 0.4s;
+    }
+
+    #VisitorButton:hover::after {
+        transition: 0.4s;
+        left: 0;
+    }
+
+
+.v1Add::after {
+    content: "Ziyaretci ekle";
+}
+
+.v2List::after {
+    content: "Ziyaretci Listesi"
+}
+
+.v3Search::after {
+    content: "Ziyaretci Ara"
+}
+
+.v4Pay::after {
+    content: "₺ $ €"
+}
+.V5Blokaj::after {
+    content: "Ziyaretçi Ekle"
+}
+
+
+
+.infiniteEUR, .infiniteUSD {
+    animation: slide 6s linear infinite;
+    text-shadow:2px 2px 4px black;
+}
+.currencyContainer {
+    background: linear-gradient(#820000,#B70404);
+}
+
+@keyframes slide {
+    0% {
+        transform: translateX(-360px)
+    }
+
+    100% {
+        transform: translateX(360px)
+    }
+}
+
+
+
+/*Navbar Stili Layoutda*/
+
+.ftco-navbar-light {
+    background: #202040 !important;
+    z-index: 3;
+    padding: 0;
+}
+
+    .ftco-navbar-light .navbar-nav > .nav-item > .nav-link {
+        font-size: 14px;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        padding-left: 20px;
+        padding-right: 20px;
+        font-weight: 600;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        position: relative;
+        opacity: 1 !important;
+    }
+
+        .ftco-navbar-light .navbar-nav > .nav-item > .nav-link:before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            bottom: 0;
+            left: 0;
+            background-color: black;
+            visibility: hidden;
+            -webkit-transform: scaleX(0);
+            -ms-transform: scaleX(0);
+            transform: scaleX(0);
+            -webkit-transition: all 0.2s ease-in-out 0s;
+            -o-transition: all 0.2s ease-in-out 0s;
+            transition: all 0.2s ease-in-out 0s;
+            z-index: -1;
+        }
+
+        .ftco-navbar-light .navbar-nav > .nav-item > .nav-link:hover {
+            color: #fff;
+        }
+
+            .ftco-navbar-light .navbar-nav > .nav-item > .nav-link:hover:before {
+                visibility: visible;
+                background-color: black;
+                -webkit-transform: scaleX(1);
+                -ms-transform: scaleX(1);
+                transform: scaleX(1);
+            }
+
+    .ftco-navbar-light .navbar-nav > .nav-item .dropdown-menu {
+        border: none;
+        background: #fff;
+        -webkit-box-shadow: 0px 10px 34px -20px rgba(0, 0, 0, 0.41);
+        -moz-box-shadow: 0px 10px 34px -20px rgba(0, 0, 0, 0.41);
+        box-shadow: 0px 10px 34px -20px rgba(0, 0, 0, 0.41);
+        border-radius: 4px;
+    }
+
+        .ftco-navbar-light .navbar-nav > .nav-item .dropdown-menu .dropdown-item {
+            font-size: 12px;
+            color: #000;
+        }
+
+            .ftco-navbar-light .navbar-nav > .nav-item .dropdown-menu .dropdown-item:hover, .ftco-navbar-light .navbar-nav > .nav-item .dropdown-menu .dropdown-item:focus {
+                background: none;
+                color: #fff;
+            }
+
+    .ftco-navbar-light .navbar-nav > .nav-item.cta > a {
+        color: #fff;
+        background: #f1bc31;
+        border-radius: 0px;
+    }
+
+    .ftco-navbar-light .navbar-nav > .nav-item.active > a {
+        color: #fff;
+    }
+
+        .ftco-navbar-light .navbar-nav > .nav-item.active > a:before {
+            visibility: visible;
+            background-color: #f1bc31;
+            -webkit-transform: scaleX(1);
+            -ms-transform: scaleX(1);
+            transform: scaleX(1);
+        }
+
+    .ftco-navbar-light .navbar-toggler {
+        border: none;
+        color: rgba(255, 255, 255, 0.5) !important;
+        cursor: pointer;
+        padding-right: 0;
+        text-transform: uppercase;
+        font-size: 16px;
+        letter-spacing: .1em;
+    }
+
+        .ftco-navbar-light .navbar-toggler:focus {
+            outline: none !important;
+        }
+
+/*Form Stili Ziyaretçi ekeleme güncelleme*/
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+@media screen and (max-width: 500px) {
+    .form .column {
+        flex-wrap: wrap;
+    }
+
+    .form :where(.gender-option, .gender) {
+        row-gap: 15px;
+    }
+}
+.form {
+    font-size: 18px;
+    font-weight: 500;
+}
+.container header {
+
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: 500;
+    text-align: center;
+}
+
+.container .form {
+    margin-top: 30px;
+}
+
+.form .input-box {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.input-box label {
+    color: #333;
+}
+
+.form :where(.input-box input, .select-box) {
+    position: relative;
+    height: 50px;
+    width: 100%;
+    outline: none;
+    font-size: 1rem;
+    color: #707070;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.input-box input:focus {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.form .column {
+    display: flex;
+    column-gap: 15px;
+}
+
+.form .gender-box {
+    margin-top: 20px;
+}
+
+.gender-box h3 {
+    color: #333;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+
+.form :where(.gender-option, .gender) {
+    display: flex;
+    align-items: center;
+    column-gap: 50px;
+    flex-wrap: wrap;
+}
+
+.form .gender {
+    column-gap: 5px;
+}
+
+.gender input {
+    accent-color: rgb(130, 106, 251);
+}
+
+.form :where(.gender input, .gender label) {
+    cursor: pointer;
+}
+
+.gender label {
+    color: #707070;
+}
+
+
+.select-box select {
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    color: #707070;
+    font-size: 1rem;
+}
+
+.form button {
+    height: 55px;
+    width: 100%;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 30px;
+    border: 3px solid black;
+    border-radius: 5px;
+    box-shadow: 2px 2px 4px black;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: linear-gradient(#202040,#00337C);
+    box-shadow: 2px 2px 4px black;
+}
+
+    .form button:hover {
+        background: white;
+        color: #202040;
+    }
+
+
+/*TextArea Ziyaretçi Yorumu için*/
+textarea {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+textarea {
+    padding: 10px;
+    width: 100%;
+    max-width: 350px;
+    line-height: 1.5;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 1px #999;
+    resize: horizontal;
+}
+
+/*Aylık Gelir*/
+
+
+.wrappers {
+    position: absolute;
+    width: 80vw;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.containers {
+    width: 28vmin;
+    height: 28vmin;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 1em 0;
+    position: relative;
+    font-size: 16px;
+    border-radius: 0.5em;
+    background-color: #21242b;
+    border-bottom: 10px solid #18f98f;
+}
+
+i {
+    color: #18f98f;
+    font-size: 2.5em;
+    text-align: center;
+}
+
+span.num {
+    color: #ffffff;
+    display: grid;
+    place-items: center;
+    font-weight: 600;
+    font-size: 3em;
+}
+
+span.text {
+    color: #e0e0e0;
+    font-size: 1em;
+    text-align: center;
+    padding: 0.7em 0;
+    font-weight: 400;
+    line-height: 0;
+}
+
+@media screen and (max-width: 1024px) {
+    .wrappers {
+        width: 85vw;
+    }
+
+    .containers {
+        height: 26vmin;
+        width: 26vmin;
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .wrappers {
+        width: 90vw;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+
+    .containers {
+        width: calc(50% - 40px);
+        height: 30vmin;
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .wrappers {
+        gap: 15px;
+    }
+
+    .containers {
+        width: 100%;
+        height: 25vmin;
+        font-size: 8px;
+    }
+}
+
+/*Next Previus Buttons Aylık Gelir Tablosunda*/
+.bnptn-arrow {
+    color: transparent;
+    display: block;
+    margin: 3rem;
+    position: relative;
+    width: 6rem;
+    height: 6rem;
+    background-color: rgba(0, 0, 0, 0.05);
+    transition: all 150ms ease-out;
+}
+
+    .bnptn-arrow::before, .bnptn-arrow::after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: #606060;
+        transition: all 150ms ease-out;
+    }
+
+    .bnptn-arrow::before {
+        width: 75%;
+        height: 25%;
+    }
+
+    .bnptn-arrow::after {
+        width: 25%;
+        height: 75%;
+    }
+
+    .bnptn-arrow:hover, .bnptn-arrow:focus {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+        .bnptn-arrow:hover::before, .bnptn-arrow:hover::after, .bnptn-arrow:focus::before, .bnptn-arrow:focus::after {
+            background-color: #404040;
+        }
+
+    .bnptn-arrow.bnptn-arrow-left::before, .bnptn-arrow.bnptn-arrow-left::after, .bnptn-arrow.bnptn-arrow-right::before, .bnptn-arrow.bnptn-arrow-right::after {
+        top: 12.5%;
+        left: 12.5%;
+    }
+
+    .bnptn-arrow.bnptn-arrow-left {
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+    }
+
+    .bnptn-arrow.bnptn-arrow-right {
+        -webkit-transform: rotate(135deg);
+        transform: rotate(135deg);
+    }

@@ -1,0 +1,102 @@
+﻿@model DailyResultDTO
+
+<style>
+    td,th {
+        width: 350px;
+    }
+</style>
+<h3 class="m-5 text-danger position-absolute">@Model.DailyEncrytpon</h3>
+<div class="m-5 position-absolute" style="bottom:100px; border:2px dotted black; border-radius:10px;">
+    <h3 class="text-danger m-3">@Model.DailyEncrytpon</h3>
+</div>
+<div class="container d-flex justify-content-center align-items-center mt-3">
+    <a id="previus" class="bnptn-arrow bnptn-arrow-left" title="previus"></a>
+    <span class="text-black mx-5" style="font-size:xx-large; position:relative; left:15px; font-weight:600; font-size:50px;">@DateTime.Now.Date.AddDays(Model.DayNumber).Year @DateTime.Now.Date.AddDays(Model.DayNumber).ToString("MMMM") @DateTime.Now.Date.AddDays(Model.DayNumber).Day</span>
+    <a id="next" class="bnptn-arrow bnptn-arrow-right" title="Next"></a>
+</div>
+<div class="ms-5 mx-5">
+    <table class="table table-bordered table-hover">
+        <tr>
+            <th>Nakit (TL)</th>
+            <th>Nakit (EURO)</th>
+            <th>Nakit (USD)</th>
+            <th>KREDİ KARTI (TL)</th>
+            <th>KREDİ KARTI (EURO)</th>
+            <th>KREDİ KARTI (USD)</th>
+        </tr>
+        <tr>
+            <td><h1>@Model.TotalCashTL</h1></td>
+            <td><h1>@Model.TotalCashEURO</h1></td>
+            <td><h1>@Model.TotalCashUSD</h1></td>
+            <td><h1>@Model.TotalKreditTL</h1></td>
+            <td><h1>@Model.TotalKreditEURO</h1></td>
+            <td><h1>@Model.TotalKreditUSD</h1></td>
+        </tr>
+    </table>
+</div>
+
+<div class="m-5">
+    <table class="table table-bordered container">
+        <tr>
+            <th>Sayaç</th>
+            <th>Açıklama</th>
+            <th>Miktar</th>
+            <th>Bölme</th>
+            <th>Tarih</th>
+            <th>Güncelle</th>
+            <th>Sil</th>
+        </tr>
+        @foreach (var finance in Model.FinancialManagements)
+        {
+            <tr>
+                <td>@finance.FinancialUpdateCount</td>
+                <td>@finance.FinancialDescripton</td>
+                <td>@finance.FinancialPayment @finance.FinancialCurrency</td>
+                <td>@finance.FinancialIssuer</td>
+                <td>@finance.FinancialDate</td>
+                <td><a class="btn btn-warning" asp-controller="Financial" asp-action="UpdateFinancial" asp-route-FinancialId="@finance.FinancialId">Güncelle</a></td>
+                <td><a class="Delete btn btn-danger" asp-controller="Financial" asp-action="DeleteFinancial" asp-route-FinancialId="@finance.FinancialId">Sil</a></td>
+            </tr>
+        }
+    </table>
+</div>
+
+@section Scripts{
+    <script>
+         let dayNumber = @Model.DayNumber;
+        $("#next").on("click", () => {
+            dayNumber += 1;
+            window.location.href = "/Financial/DailyResult?dayNumber=" + dayNumber;
+        })
+        $("#previus").on("click", () => {
+            dayNumber -= 1;
+            window.location.href = "/Financial/DailyResult?dayNumber=" + dayNumber;
+        })
+
+        $(".Delete").on("click", (e) => {
+            e.preventDefault();
+            let url = e.currentTarget.getAttribute('href')
+            Swal.fire({
+                title: 'Eminmisin?',
+                text: "Bunu geri alamazsın!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, Sil',
+                cancelButtonText: 'İptal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Silindi!',
+                        '',
+                        'success',
+                        setTimeout(() => {
+                            window.location.href = url
+                        }, 500)
+                    )
+                }
+            })
+        })
+    </script>
+}

@@ -1,0 +1,22 @@
+0=> çıkış = kırmızı
+1=> giriş = mavi 
+2=> otelde = yeşil
+3=> gelecek = sarı
+4=> giriş/çıkış = mavi/kırmızı
+5=> boş = beyaz
+6=> otelde/çıkış = yeşil/kırmızı
+7=> giriş/otelde= yeşil/mavi
+8=> giriş/otelde/çıkış = mavi/yeşil/kırmızı
+
+
+#00337C => Mavi / Açık
+#202040 => Mavi /Koyu
+
+#82CD47 => Yeşil /Açık
+#54B435 => Yeşil /Koyu
+
+#B70404 => Kırmızı /Açık
+#820000 => Kırmızı /Koyu
+
+#FFE569 => Sarı / Açık
+#E4CE66 => Sarı / Koyu

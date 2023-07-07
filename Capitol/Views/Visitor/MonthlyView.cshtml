@@ -1,0 +1,132 @@
+﻿@model MonthlyVisitorDTO
+
+<style>
+    body {
+        user-select: none;
+    }
+
+    table {
+        width: 100%;
+        border-spacing: 0;
+        border-collapse: collapse;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    td, th {
+        padding: 0.3rem !important;
+        max-width: 40px;
+    }
+</style>
+<div class="d-flex justify-content-center pb-2">
+    <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">< @DateTime.Now.AddMonths(Model.monthNumber).Year - @DateTime.Now.AddMonths(Model.monthNumber).ToString("MMMM") ></span>
+</div>
+<div class=" col-12 d-flex">
+    <button id="previus" class="btn btn-dark mx-4" style="width:80px"></button>
+    <table class="table table-bordered table-hover">
+        <tr>
+            <th>@DateTime.Now.ToString("MMMM")</th>
+            <th>101</th>
+            <th>102</th>
+            <th>103</th>
+            <th>104</th>
+            <th>201</th>
+            <th>202</th>
+            <th>203</th>
+            <th>204</th>
+            <th>301</th>
+            <th>302</th>
+            <th>303</th>
+            <th>304</th>
+            <th>401</th>
+            <th>402</th>
+            <th>403</th>
+            <th>404</th>
+            <th>501</th>
+            <th>502</th>
+            <th>503</th>
+            <th>601</th>
+            <th>602</th>
+            <th>603</th>
+            <th>701</th>
+            <th>702</th>
+            <th>Doluluk</th>
+        </tr>
+        @for (int i = 1; i < Model.tableValues.GetLength(1); i++)
+        {
+            <tr>
+                @if (DateTime.Now.Day == i && DateTime.Now.Month == DateTime.Now.AddMonths(Model.monthNumber).Month)
+                {
+                    <td class="text-break" valign="middle" align="center" style="background-image: linear-gradient(#54B435,#82CD47); font-weight: 600; height: 60px;"> @(i)</td>
+                }
+                else
+                {
+                    <td class="text-break" style="font-size:12px; font-weight:600;"> @(i)</td>
+                }
+                @for (int j = 0; j < Model.tableValues.GetLength(0); j++)
+                {
+                    if (j < 24)
+                    {
+                        if (DateTime.Now.Day == i && DateTime.Now.Month == DateTime.Now.AddMonths(Model.monthNumber).Month)
+                        {
+                            <td class="text-break" valign="middle" align="center" style="background-image:linear-gradient(@(Model.tableValues[j,i].CellState ? "#820000,#B70404" : "#54B435,#82CD47")); font-weight:600; color:white; text-shadow:2px 2px 2px black;"><a style="color:white;" href="@(Model.tableValues[j,i].Name == null ? null : "https://localhost:7121/Visitor/SelectedVisitors?visitorId=" + Model.tableValues[j,i].Identity)">@(Model.tableValues[j, i].Name== null ? Model.roomNumbers[j]: Model.tableValues[j,i].Name)</a></td>
+                        }
+                        else
+                        {
+                            <td class="text-break" style="background-image: linear-gradient( @(Model.tableValues[j,i].CellState ? "#B70404,#820000" : "white,white") );font-weight: 600;color: white;text-shadow: 2px 2px 2px black;"> <a style="color:white;" href="@(Model.tableValues[j,i].Name == null ? null : "https://localhost:7121/Visitor/SelectedVisitors?visitorId=" + Model.tableValues[j,i].Identity)">@(Model.tableValues[j, i].Name== null ? null: Model.tableValues[j,i].Name)</a></td>
+                        }
+                    }
+                    else if (j == 24)
+                    {
+
+                        <td style="font-weight:600;">@(Model.tableValues[24, i].count == 0 ? "" : Model.tableValues[24,i].count)</td>
+                    }
+                }
+            </tr>
+        }
+        <tr>
+            <th>@DateTime.Now.ToString("MMMM")</th>
+            <th>101</th>
+            <th>102</th>
+            <th>103</th>
+            <th>104</th>
+            <th>201</th>
+            <th>202</th>
+            <th>203</th>
+            <th>204</th>
+            <th>301</th>
+            <th>302</th>
+            <th>303</th>
+            <th>304</th>
+            <th>401</th>
+            <th>402</th>
+            <th>403</th>
+            <th>404</th>
+            <th>501</th>
+            <th>502</th>
+            <th>503</th>
+            <th>601</th>
+            <th>602</th>
+            <th>603</th>
+            <th>701</th>
+            <th>702</th>
+            <th>@ViewBag.totalCount</th>
+        </tr>
+    </table>
+    <button style="width:80px" id="next" class="btn btn-dark mx-4"></button>
+</div>
+<style>
+</style>
+@section Scripts{
+    <script>
+        let monthNumber = @Model.monthNumber;
+        $("#next").on("click", () => {
+            monthNumber += 1;
+            window.location.href = "/Visitor/MonthlyView?monthNumber=" + monthNumber;
+        })
+        $("#previus").on("click", () => {
+            monthNumber -= 1;
+            window.location.href = "/Visitor/MonthlyView?monthNumber=" + monthNumber;
+        })
+    </script>
+}

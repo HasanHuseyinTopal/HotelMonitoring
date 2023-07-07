@@ -1,0 +1,43 @@
+﻿@model FinancialManagement
+
+<div class="d-flex justify-content-center">
+    <form id="formRegister" asp-controller="Financial" asp-action="UpdateFinancial" method="post" class="form">
+        <input hidden asp-for="FinancialId" />
+        <input hidden asp-for="FinancialUpdateCount" />
+        <div class="d-flex justify-content-center flex-column mt-5">
+            <div class="column">
+                <div class="input-box">
+                    <label style="display:block;" asp-for="FinancialDescripton">Açıklama</label>
+                    <textarea style="min-width: 400px; min-height: 200px;" asp-for="FinancialDescripton" placeholder="Açıklama yazınız" autocomplete="off"></textarea>
+                </div>
+                <div class="input-box">
+                    <label asp-for="FinancialIssuer">Bölme</label>
+                    <div class="column">
+                        <div class="select-box">
+                            <select asp-for="FinancialIssuer" asp-items="@Html.GetEnumSelectList<FinancialIssuer>()">
+                                <option selected disabled hidden>Bölme</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="input-box">
+                    <label asp-for="FinancialPayment">Miktar</label>
+                    <input type="number" step="any" asp-for="FinancialPayment" placeholder="Tutar" autocomplete="off" />
+                </div>
+                <div class="input-box">
+                    <label asp-for="FinancialCurrency">Para Birimi</label>
+                    <div class="column">
+                        <div class="select-box">
+                            <select asp-for="FinancialCurrency" asp-items="@Html.GetEnumSelectList<Currency>()">
+                                <option selected disabled hidden>Para Birimi</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary">Ekle</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,81 @@
+﻿@model List<AllVisitorDTO>
+
+
+<div class="container d-flex justify-content-center mt-5">
+    <table class="table table-bordered table-hover border border-3 border-dark shadow">
+        <thead>
+            <tr>
+                <th>Adı</th>
+                <th>Soyadı</th>
+                <th>Kişi Sayısı</th>
+                <th>Oda No</th>
+                <th>Giriş Tarihi</th>
+                <th>Durum</th>
+                <th>Çıkış Tarihi</th>
+                <th>Toplam Gün</th>
+                <th>Günlük</th>
+                <th>Toplam Ödeme</th>
+                <th>Not</th>
+                <th>Ödeme</th>
+                <th>Detay</th>
+                <th>Güncelle</th>
+                <th>Giriş</th>
+                <th>Çıkış</th>
+                <th>Sil</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var visitor in Model)
+            {
+                <tr>
+                    <td>@visitor.VisitorName</td>
+                    <td>@visitor.VisitorSurName</td>
+                    <td>@visitor.VisitorCount</td>
+                    <td>@visitor.VisitorRoomNumber</td>
+                    <td>@visitor.VisitorStartDate.ToString("MMMM d")</td>
+                    <td style="color:white; background-image:linear-gradient(#202040,#00337C)">Giriş</td>
+                    <td>@visitor.VisitorEndDate.ToString("MMMM d")</td>
+                    <td>@visitor.VisitorTotalVisitDay</td>
+                    <td>@(visitor.VisitorRoomPrice ==null ? "  " : visitor.VisitorRoomPrice.Value.ToString("0.00"))  @(visitor.VisitorPaymentCurrency == null ? "  ":visitor.VisitorPaymentCurrency.ToString() == "EURO" ? "€" : visitor.VisitorPaymentCurrency.ToString() == "USD" ? "$" : visitor.VisitorPaymentCurrency.ToString() == "TL" ? "₺" : "")</td>
+                    <td>@(visitor.VisitorTotalPrice==null ? "  " : visitor.VisitorTotalPrice.Value.ToString("0.00")) @(visitor.VisitorPaymentCurrency == null ? "  ":visitor.VisitorPaymentCurrency.ToString() == "EURO" ? "€" : visitor.VisitorPaymentCurrency.ToString() == "USD" ? "$" : visitor.VisitorPaymentCurrency.ToString() == "TL" ? "₺" : "")</td>
+                    <td>@(visitor.VisitorDescription != null ? "Var":"Yok")</td>
+                    <td style=" width:1px; "><img style="height: 100%; width: 100%; border-radius:10px;" src="@(visitor.VisitorPaymentIsDone==false ?"/Images/cross.jpg":"/Images/thick.jpg")" /></td>
+                    <td><a class="btn btn-dark text-white" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-visitorId="@visitor.VisitorId">Detay</a></td>
+                    <td><a class="btn btn-warning" asp-controller="Visitor" asp-action="UpdateVisitor" asp-route-id="@visitor.VisitorId">Güncelle</a></td>
+                    <td><a class="btn btn-primary" asp-controller="Visitor" asp-action="CheckInVisitor" asp-route-id="@visitor.VisitorId">Giriş</a></td>
+                    <td><a class="btn btn-info" asp-controller="Visitor" asp-action="CheckOutVisitor" asp-route-id="@visitor.VisitorId">Çıkış</a></td>
+                    <td><a class="Delete btn btn-danger" asp-controller="Visitor" asp-action="DeleteVisitor" asp-route-id="@visitor.VisitorId">Sil</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Scripts{
+    <script>
+        $(".Delete").on("click", (e) => {
+            e.preventDefault();
+            let url = e.currentTarget.getAttribute('href')
+            Swal.fire({
+                title: 'Eminmisin?',
+                text: "Bunu geri alamazsın!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, Sil',
+                cancelButtonText: 'İptal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Silindi!',
+                        '',
+                        'success',
+                        setTimeout(() => {
+                            window.location.href = url
+                        }, 500)
+                    )
+                }
+            })
+        })
+    </script>
+}

@@ -1,0 +1,281 @@
+﻿@model List<VisitorDetailsDTO>
+
+<style>
+    * {
+        user-select: none;
+    }
+    #gotoroom:hover{
+        cursor:pointer;
+    }
+    .myCard {
+        height: 420px;
+        max-width: 800px;
+        background-image: linear-gradient(90deg,black,silver 40%,silver 45%,white 65%, white 70%);
+        box-shadow: 2px 2px 24px black;
+        border-radius: 0 0 25px 25px;
+        color: white;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font: 500 25px Arial;
+        text-shadow: #000 1px 1px 3px, #000 1px 1px 3px, #000 1px 1px 3px, #000 1px 1px 3px, #000 1px 1px 3px, #000 1px 1px 3px;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .myName {
+        background-image: linear-gradient(90deg,wheat,white 40%,white 45%,white 65%, white 70%);
+        color: white;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font: 500 25px Arial;
+        text-shadow: #000 1px 1px 3px, #000 1px 1px 3px, #000 1px 1px 3px, #000 1px 1px 3px, #000 1px 1px 3px, #000 1px 1px 3px;
+        -webkit-font-smoothing: antialiased;
+        min-width: 600px;
+    }
+
+    .process {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50px;
+        width: 80px;
+        position: absolute;
+        z-index: 1;
+        border-radius: 5px;
+        bottom: -25px;
+        transition: 0.2s;
+        font: 200 15px Arial;
+        color: white;
+    }
+
+        .process:hover {
+            transition: 0.2s;
+            height: 80px;
+            z-index: 2;
+        }
+
+    .Delete {
+        background-image: linear-gradient(#820000,#B70404)
+    }
+
+    .enter {
+        background-image: linear-gradient(#202040,#00337C)
+    }
+
+    .update {
+        background-image: linear-gradient(#E4CE66,#FFE569)
+    }
+
+    .leave {
+        background-image: linear-gradient(aqua,blue)
+    }
+
+    #addVisitorCircle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        font-weight: 500;
+        color: silver;
+        background-image: linear-gradient(#202040,#00337C);
+        height: 100px;
+        width: 100px;
+        border: 3px solid black;
+        border-radius: 50px;
+        box-shadow: 2px 2px 4px black;
+        cursor: pointer;
+    }
+
+        #addVisitorCircle:hover {
+            background-image: linear-gradient(white,white);
+            border: 3px solid #202040;
+            color: black;
+        }
+</style>
+
+@if (ViewBag.RoomNumber >= 99)
+{
+    <div class="d-flex justify-content-center mt-3">
+        <h1 style="color:wheat; letter-spacing:20px; user-select:none; text-shadow:2px 2px 3px black;">@ViewBag.RoomNumber</h1>
+    </div>
+    <div class="d-flex justify-content-center position-absolute mt-5" style="top:50px; left:50px;">
+        <a asp-controller="Visitor" asp-action="AddVisitor">
+            <div id="addVisitorCircle">
+                +
+            </div>
+        </a>
+    </div>
+}
+
+@if (Model.Count() >= 1)
+{
+    <div class="d-flex mt-5 justify-content-center position-relative flex-wrap">
+        @foreach (var visitor in Model)
+        {
+            <div class="d-flex flex-column align-items-start" style="margin-bottom:80px;">
+                <div class="ms-5 myName pb-3" style="border-radius:25px 0 0 0">
+                    <div class="d-flex justify-content-start mt-4 mx-3">
+                        <div class="px-3">
+                            @visitor.VisitorName
+                        </div>
+                        <div class="px-3">
+                            @(visitor.VisitorSurName==null ? "":visitor.VisitorSurName.ToUpper())
+                        </div>
+                    </div>
+                </div>
+                <div class="myCard d-flex mx-5 position-relative" style="border-radius:0 25px 25px 25px">
+                    <div class="d-flex flex-column" style="background-color: black; min-width:350px; opacity: 0.8; border-radius: 0 0 0 25px;">
+                        <div class="d-flex justify-content-start mt-3 mx-3">
+                            <div class=" px-3">
+                                <span style="color:wheat">Tel</span> :<span style="user-select:all"> @visitor.VisitorPhoneNumber</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start mt-3 mx-3">
+                            <div class=" px-3">
+                                <span style="color:wheat">Oda</span> : @visitor.VisitorRoomNumber
+                            </div>
+                            <div class=" px-3">
+                                <span style="color: wheat">Yıl</span> : @visitor.VisitorStartDate.ToString("yy")
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start mt-3 mx-3">
+                            <div class="px-3">
+                                @visitor.VisitorStartDate.ToString("d MMM")
+                            </div>
+                            <div class="px-1">
+                                @visitor.VisitorEndDate.ToString("d MMM")
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start mt-3 mx-3">
+                            <div class=" px-3">
+                                <span style="color: wheat ">Kişi</span> : @visitor.VisitorCount
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start mt-3 mx-3">
+                            <div class=" px-3">
+                                <span style="color: wheat ">Kalan Gün</span> : @visitor.VisitorTotalVisitDay <span style="color:wheat">/</span> @visitor.VisitorLeftDays
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start mt-3 mx-3">
+                            <div class="px-3">
+                                @(visitor.VisitorRezervation==null ? "--" :  visitor.VisitorRezervation) <span style="color:wheat">&</span> @(visitor.VisitorRoomPrice==null ? "--":visitor.VisitorRoomPrice.Value.ToString("0.00")) @(visitor.VisitorPaymentCurrency.ToString() == "EURO" ? "€" : visitor.VisitorPaymentCurrency.ToString() == "USD" ? "$":visitor.VisitorPaymentCurrency.ToString() == "TL" ? "₺":"")
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start mt-3 mx-3">
+                            <div class="px-3">
+                                <span style="color: wheat ">Toplam</span> : @(visitor.VisitorTotalPrice==null? "--" : visitor.VisitorTotalPrice.Value.ToString("0.00")) @(visitor.VisitorPaymentCurrency.ToString() == "EURO" ? "€" : visitor.VisitorPaymentCurrency.ToString() == "USD" ? "$":visitor.VisitorPaymentCurrency.ToString() == "TL" ? "₺":"")
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start mt-3 mx-3">
+                            <div class="px-3 d-flex">
+                                <span style="color: wheat; margin-right:6px;">Durum</span> : @(visitor.VisitorState == 1 ? "Giriş" : visitor.VisitorState == 2 ? "Otelde": visitor.VisitorState == 3 ? "Gelecek":"Çıkış")
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start mt-3 mx-3">
+                            <div class="px-3 d-flex">
+                                <label for="payment"><span style="color: wheat ">Ödendi</span></label>
+                                <input type="checkbox" class="visitorPaymentStatus" style="width:40px; height:100%" checked="@visitor.VisitorPaymentIsDone" value="@visitor.VisitorId" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column mt-4" style="min-width:360px">
+                        @foreach (var payment in visitor.Payments)
+                        {
+
+                            <div class="d-flex justify-content-start mx-3 mt-3">
+                                <div class="px-3">
+                                    <span class="me-3">
+                                        @(payment.VisitorPaymentDate==null ? null : payment.VisitorPaymentDate.Value.ToString("d MMM"))
+                                    </span>
+                                    @(payment.VisitorPayment==null?null: payment.VisitorPayment.Value.ToString("0.00"))
+                                    @(payment.VisitorPaymentCurreny.ToString() == "EURO" ? "€" : payment.VisitorPaymentCurreny.ToString() == "USD" ? "$": payment.VisitorPaymentCurreny.ToString()== "TL"?"₺":"")
+
+                                    <span class="ms-3">@(payment.VisitorPaymentType.ToString()=="Nakit" ? "Nakit": payment.VisitorPaymentType.ToString()== "KrediKartı" ?"K.K":"")</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="position-absolute" style="right:10px; top:-60px;">
+                        @if (visitor.VisitorDescription != null)
+                        {
+                            <div class="message">
+                                <img src="~/Images/message.png" width="50" />
+                            </div>
+                        }
+                    </div>
+                    <div class="showMessage position-absolute text-break justify-content-center d-flex p-3 d-none" style="left:0; color:black; text-shadow:none; font-weight:600; line-height:40px; outline-style:dashed; outline-color:silver; width:350px; height:420px; background-color:white; border-radius:0 0 0 25px">
+                        @visitor.VisitorDescription
+                    </div>
+                    <a asp-controller="Visitor" class="OnDelete" asp-action="DeleteVisitor" asp-route-id="@visitor.VisitorId">
+                        <div class="Delete process" style="  right:0px;">Sil</div>
+                    </a>
+                    <a asp-controller="Visitor" asp-action="CheckInVisitor" asp-route-id="@visitor.VisitorId">
+                        <div class="process enter" style="  right: 90px;">Giriş</div>
+                    </a>
+                    <a asp-controller="Visitor" asp-action="UpdateVisitor" asp-route-id="@visitor.VisitorId">
+                        <div class="process update" style="  right: 180px;">Güncelle</div>
+                    </a>
+                    <a asp-controller="Visitor" asp-action="CheckOutVisitor" asp-route-id="@visitor.VisitorId">
+                        <div class="process leave" style=" right: 270px;">Çıkış</div>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
+
+@section Scripts{
+    <script>
+        $(".message").on("click", () => {
+            if ($(".showMessage").hasClass("d-none")) {
+                $(".showMessage").removeClass("d-none")
+            }
+            else {
+                $(".showMessage").addClass("d-none")
+            }
+        })
+
+        $(".visitorPaymentStatus").on("change", (e) => {
+            let visitorId = $(e.currentTarget).val();
+            let PaymentObj = { paymentStatus: e.currentTarget.checked, visitorId: visitorId }
+            console.log(PaymentObj)
+            fetch("https://localhost:7121/Visitor/PaymentIsDone", {
+                method: "POST",
+                mode: "cors",
+                cache: "no-cache",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                redirect: "follow",
+                referrerPolicy: "no-referrer",
+                body: JSON.stringify(PaymentObj)
+            })
+        })
+
+        $(".OnDelete").on("click", (e) => {
+            e.preventDefault();
+            let url = e.currentTarget.getAttribute('href')
+            Swal.fire({
+                title: 'Emin misin?',
+                text: "Bunu geri alamazsın",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, Sil',
+                cancelButtonText: 'İptal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Silindi!',
+                        '',
+                        'Başarılı',
+                        setTimeout(() => {
+                            window.location.href = url
+                        }, 500)
+                    )
+                }
+            })
+        })
+    </script>
+}

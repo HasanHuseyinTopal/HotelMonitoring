@@ -1,0 +1,86 @@
+﻿<style>
+    body {
+        user-select: none;
+    }
+</style>
+
+<div class="d-flex justify-content-center  m-5">
+    <div class="form col-4">
+        <div class="column">
+            <div class="input-box">
+                <label>Adı</label>
+                <input type="text" id="VisitorName" placeholder="Adını giriniz" autocomplete="off" />
+            </div>
+            <div class="input-box">
+                <label>Soyadı</label>
+                <input type="text" id="VisitorSurName" placeholder="Soyadını giriniz" autocomplete="off" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-center">
+    <a><div id="VisitorButton" class="v3Search m-3">Ziyaretci Ara</div></a>
+</div>
+
+
+<div class="d-flex container justify-content-center align-items-center">
+    <table class="table table-bordered table-hover border border-3 border-dark shadow">
+        <thead>
+            <tr>
+                <th>Adı</th>
+                <th>Soyadı</th>
+                <th>Oda Numarası</th>
+                <th>Giriş Tarihi</th>
+                <th>Çıkış Tarihi</th>
+                <th>Oda Fiyatı</th>
+                <th>Yorum</th>
+                <th>Detay</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+@section Scripts{
+    <script>
+        $("#VisitorButton").on("click", () => {
+            let obj = {
+                VisitorName: "",
+                VisitorSurName: ""
+            }
+            obj.VisitorName = $("#VisitorName").val();
+            obj.VisitorSurName = $("#VisitorSurName").val();
+
+
+            fetch("https://localhost:7121/Visitor/VisitorSearch", {
+                method: "POST",
+                mode: "cors",
+                cache: "no-cache",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                redirect: "follow",
+                referrerPolicy: "no-referrer",
+                body: JSON.stringify(obj),
+            }).then(data => data.json()).then(data => {
+                var result = "";
+                data.forEach(element => {
+                    result += `<tr>
+                                <td>${element.VisitorName}</td >
+                                <td>${element.VisitorSurName}</td >
+                                <td>${element.VisitorRoomNumber}</td >
+                                <td>${element.VisitorStartDate}</td >
+                                <td>${element.VisitorEndDate}</td >
+                                <td>${element.VisitorRoomPrice} ${element.VisitorPaymentCurrency}</td>
+                                <td style="max-width:100px;">${element.VisitorDescription == null ? ` -- ` : element.VisitorDescription}</td >
+                                <td><a class="btn btn-dark text-white" href="https://localhost:7121/Visitor/SelectedVisitors?VisitorId=${element.VisitorId}">Detay</a></td>
+                              </tr>`
+                });
+                $("table tbody").html("");
+                $("table tbody").append(result);
+            }).catch(error => console.log(error));
+        })
+    </script>
+}

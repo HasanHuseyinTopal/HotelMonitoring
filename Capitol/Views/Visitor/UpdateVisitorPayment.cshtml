@@ -1,0 +1,106 @@
+﻿@using EntityLayer.Entities
+@model List<PaymentDTO>
+
+<style>
+    span {
+        font-weight: 700;
+    }
+</style>
+<div class="col-5 container border shadow p-2 mt-3">
+    <section class="container">
+        <header style="font-weight: 600; color: #202040;">Ziyaretçi Ödeme Formu</header>
+        <div class="shadow-sm d-inline-block border fs-4 text-black border-5 rounded-3 p-2 m-0" style="background-image:linear-gradient(45deg,aqua,aqua,white,white)">
+            <span>@(Model[0].Visitor.VisitorName.Split(" ").Length > 1 ? Model[0].Visitor.VisitorName.Split(" ")[0] : Model[0].Visitor.VisitorName) @Model[0].Visitor.VisitorSurName</span> <span style="font-weight:bolder;">//</span> <span>@(((Model[0].Visitor.VisitorEndDate.Date - Model[0].Visitor.VisitorStartDate.Date).Days * Model[0].Visitor.VisitorRoomPrice.Value).ToString("0.00")) @(Model[0].Visitor.VisitorPaymentCurrency.ToString() == "EURO" ? "€" : Model[0].Visitor.VisitorPaymentCurrency.ToString() == "USD" ? "$" : Model[0].Visitor.VisitorPaymentCurrency.ToString() == "TL" ? "₺" : "")  </span>
+        </div>
+        <form asp-controller="Visitor" asp-action="UpdateVisitorPayment" method="post" class="form">
+            @for (int i = 0; i < Model.Count(); i++)
+            {
+                <input hidden name="visitorId" value="@Model[0].Visitor.VisitorId" />
+                <input hidden asp-for="@Model[i].VisitorId" />
+                <input hidden asp-for="@Model[i].PaymentId" />
+                <div class="column">
+                    <div class="input-box">
+                        <label asp-for="@Model[i].VisitorPayment">Ödenen Tutar</label>
+                        <input type="number" asp-for="@Model[i].VisitorPayment" placeholder="Ödenen tutarı giriniz" autocomplete="off" />
+                    </div>
+                    <div class="column">
+                        <div class="input-box">
+                            <label asp-for="@Model[i].VisitorPaymentDate">Ödeme Tarihi</label>
+                            <input type="datetime-local" asp-for="@Model[i].VisitorPaymentDate" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="input-box">
+                        <label asp-for="@Model[i].VisitorPaymentType">Ödeme Tipi</label>
+                        <div class="column">
+                            <div class="select-box">
+                                <select asp-for="@Model[i].VisitorPaymentType" asp-items="@Html.GetEnumSelectList<PaymentType>()">
+                                    <option selected disabled hidden>Ödeme Türü</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-box">
+                        <label asp-for="@Model[i].VisitorPaymentCurreny">Para Birimi</label>
+                        <div class="column">
+                            <div class="select-box">
+                                <select asp-for="@Model[i].VisitorPaymentCurreny" asp-items="@Html.GetEnumSelectList<Currency>()">
+                                    <option selected disabled hidden>Para Birimi</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-start mt-2">
+                    <a class="btn btn-danger mt-2 DeletePaymet me-3" asp-controller="Visitor" asp-action="DeletePaymentSection" asp-route-PaymentId="@Model[i].PaymentId">Sil</a>
+                    @if (Model[i].VisitorPayment >= 1)
+                    {
+                        <img src="~/Images/thick.jpg" style="width:40px; height:40px; border-radius:20px; margin-top:10px;" />
+                    }
+                </div>
+                <hr style="color:black; height:5px; margin-top:30px;" />
+            }
+            <div class="d-flex justify-content-center align-items-center">
+                <button class="m-0 mx-3" style="width:70%">Ödeme Yap</button>
+                <a id="VisitorButton" class="v4Pay" asp-controller="Visitor" asp-action="AddNewPaymentField" asp-route-VisitorId="@Model[0].VisitorId">
+                    Yeni Sekme
+                </a>
+                <div class="position-absolute d-flex text-danger p-3" style="top:150px; left:150px;" asp-validation-summary="All"></div>
+            </div>
+        </form>
+    </section>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial.cshtml" />
+    <script>
+
+        $(".DeletePaymet").on("click", (e) => {
+            e.preventDefault();
+            let url = e.currentTarget.getAttribute('href')
+            Swal.fire({
+                title: 'Ödemeyi silmek üzeresiniz?',
+                text: "Bunu geri alamazsın!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, Sil',
+                cancelButtonText: 'İptal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Silindi!',
+                        '',
+                        'success',
+                        setTimeout(() => {
+                            window.location.href = url
+                        }, 500)
+                    )
+                }
+            })
+        })
+    </script>
+}
+

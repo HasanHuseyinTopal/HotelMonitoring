@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="icon" href="~/Images/Capitol.png" type="image/x-icon" />
+    <title>@ViewData["Title"]  Capitol</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <section style="user-select:none;">
+        <nav class="navbar navbar-expand navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+            <div class="container">
+                <div class="collapse navbar-collapse d-flex justify-content-between" id="ftco-nav">
+                    <div>
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item"><a asp-controller="Visitor" asp-action="DailyVisitors" class="nav-link">Odalar</a></li>
+                            <li class="nav-item"><a asp-controller="Visitor" asp-action="MonthlyView" class="nav-link">Blokaj</a></li>
+                            <li class="nav-item"><a asp-controller="Financial" asp-action="DailyFinancialInOutCome" class="nav-link">Giderler</a></li>
+                            <li class="nav-item"><a asp-controller="Financial" asp-action="DailyResult" class="nav-link">Günlük</a></li>
+
+                        </ul>
+                    </div>
+                    <div>
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item"><a asp-controller="Visitor" asp-action="EmployeeNotes" class="nav-link">Not</a></li>
+                            <li class="nav-item"><a asp-controller="Visitor" asp-action="VisitorSearch" class="nav-link">Arama</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Linkler</a>
+                                <div class="dropdown-menu" style="background-color:silver" aria-labelledby="dropdown04">
+                                   
+                                    <a class="dropdown-item" asp-controller="Visitor" asp-action="MonthlyIncome">Aylık Gelir</a>
+                                    <a class="dropdown-item" asp-controller="Visitor" asp-action="Questions">Sorular?</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </section>
+    @RenderBody()
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
