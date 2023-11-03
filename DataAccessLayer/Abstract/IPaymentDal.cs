@@ -10,5 +10,7 @@ namespace DataAccessLayer.Abstract
 {
     public interface IPaymentDal : IGenericDAL<Payment>
     {
+        IQueryable<Payment> GetAllWithVisitorProperties(Expression<Func<Payment, bool>> filter = null);
+
     }
 }

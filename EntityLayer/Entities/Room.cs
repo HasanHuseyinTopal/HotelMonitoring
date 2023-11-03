@@ -12,10 +12,7 @@ namespace EntityLayer.Entities
         [Key]
         public int RoomId { get; set; }
         public int RoomNumber { get; set; }
-        public bool RoomHasBalcony { get; set; }
-        public string RoomType { get; set; }
         public bool RoomIsClean { get; set; }
-        public int RoomSize { get; set; }
-        public int RoomFloor { get; set; }
+        public bool RoomState { get; set; }
     }
 }

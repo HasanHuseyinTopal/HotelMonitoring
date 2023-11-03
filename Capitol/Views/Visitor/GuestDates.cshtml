@@ -1,0 +1,40 @@
+﻿@model List<Visitor>
+
+<div class="container mt-5">
+    <table class="table table-hover">
+        <tr>
+            <th>(N)</th>
+            <th>Adı</th>
+            <th>SoyAdı</th>
+            <th>Rezervasyon</th>
+            <th>Eklenme Tarihi</th>
+            <th>Vardiya</th>
+            <th>Detay</th>
+        </tr>
+        @for (int i = 0; i < Model.Count(); i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@Model[i].VisitorProperties[0].VisitorName</td>
+                <td>@Model[i].VisitorProperties[0].VisitorSurName</td>
+                <td>@Model[i].VisitorRezervation</td>
+                <td>@Model[i].VisitorAddedDate?.ToString("f")</td>
+                <td>
+                    @if (Model[i].VisitorAddedDate?.Hour >= 8 && Model[i].VisitorAddedDate?.Hour <= 14)
+                    {
+                        <span>Sabah</span>
+                    }
+                    else if (Model[i].VisitorAddedDate?.Hour >= 15 && Model[i].VisitorAddedDate?.Hour <= 22)
+                    {
+                        <span>Öğle</span>
+                    }
+                    else if (Model[i].VisitorAddedDate?.Hour >= 23 || Model[i].VisitorAddedDate?.Hour <= 7)
+                    {
+                        <span>Gece</span>
+                    }
+                </td>
+                <td><a class="btn btn-dark text-white" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-visitorId="@Model[i].VisitorId">Detay</a></td>
+            </tr>
+        }
+    </table>
+</div>

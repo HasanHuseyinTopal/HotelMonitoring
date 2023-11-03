@@ -2,18 +2,89 @@
     body {
         user-select: none;
     }
+
+    #CheckOutRoomCountElement {
+        background: -webkit-linear-gradient(#B70404,#820000);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    #CheckOutVisitorCountElement {
+        background: -webkit-linear-gradient(#B70404,#820000);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    #CheckInRoomCountElement {
+        background: -webkit-linear-gradient(#B70404,#820000);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    #CheckInVisitorCountElement {
+        background: -webkit-linear-gradient(#B70404,#820000);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 </style>
 
+
+<div class="checkOutContainer d-none position-relative d-flex justify-content-center fs-1">
+    <div class="position-absolute mt-5 ">
+        Çıkış : <span id="CheckOutRoomCountElement"></span><span>Oda ,</span><span id="CheckOutVisitorCountElement"></span><span>Kişi</span>
+    </div>
+</div>
+<div class="checkInContainer d-none position-relative d-flex justify-content-center fs-1">
+    <div class="position-absolute mt-5 ">
+        Giriş : <span id="CheckInRoomCountElement"></span><span>Oda ,</span><span id="CheckInVisitorCountElement"></span><span>Kişi</span>
+    </div>
+</div>
 <div class="d-flex justify-content-center  m-5">
-    <div class="form col-4">
-        <div class="column">
-            <div class="input-box">
+    <div class="form col-6 mt-5">
+        <div class="column mt-5">
+            <div class="input-box  d-flex row m-2">
                 <label>Adı</label>
                 <input type="text" id="VisitorName" placeholder="Adını giriniz" autocomplete="off" />
             </div>
-            <div class="input-box">
+            <div class="input-box  d-flex row m-2">
                 <label>Soyadı</label>
                 <input type="text" id="VisitorSurName" placeholder="Soyadını giriniz" autocomplete="off" />
+            </div>
+            <div class="input-box d-flex row m-2">
+                <label>Giriş Tarihi</label>
+                <input type="date" id="VisitorStartDate" />
+            </div>
+            <div class="input-box d-flex row m-2">
+                <label>Çıkış Tarihi</label>
+                <input type="date" id="VisitorEndDate" />
+            </div>
+            <div class="input-box d-flex row m-2">
+                <label>Oda Numarası</label>
+                <select id="VisitorRoomNumber">
+                    <option selected disabled hidden>Oda Numarası</option>
+                    <option>101</option>
+                    <option>102</option>
+                    <option>103</option>
+                    <option>104</option>
+                    <option>201</option>
+                    <option>202</option>
+                    <option>203</option>
+                    <option>204</option>
+                    <option>301</option>
+                    <option>302</option>
+                    <option>303</option>
+                    <option>304</option>
+                    <option>401</option>
+                    <option>402</option>
+                    <option>403</option>
+                    <option>404</option>
+                    <option>501</option>
+                    <option>502</option>
+                    <option>503</option>
+                    <option>601</option>
+                    <option>602</option>
+                    <option>603</option>
+                    <option>701</option>
+                    <option>702</option>
+                </select>
             </div>
         </div>
     </div>
@@ -29,11 +100,11 @@
             <tr>
                 <th>Adı</th>
                 <th>Soyadı</th>
+                <th>Rezervasyon</th>
                 <th>Oda Numarası</th>
                 <th>Giriş Tarihi</th>
                 <th>Çıkış Tarihi</th>
                 <th>Oda Fiyatı</th>
-                <th>Yorum</th>
                 <th>Detay</th>
             </tr>
         </thead>
@@ -42,16 +113,31 @@
     </table>
 </div>
 
+
+
 @section Scripts{
     <script>
+
         $("#VisitorButton").on("click", () => {
             let obj = {
                 VisitorName: "",
-                VisitorSurName: ""
+                VisitorSurName: "",
+                VisitorStartDate: Date,
+                VisitorEndDate: Date,
+                VisitorRoomNumber: 0
             }
             obj.VisitorName = $("#VisitorName").val();
             obj.VisitorSurName = $("#VisitorSurName").val();
+            obj.VisitorStartDate = $("#VisitorStartDate").val();
+            obj.VisitorEndDate = $("#VisitorEndDate").val();
+            obj.VisitorRoomNumber = $("#VisitorRoomNumber").val();
 
+            if (obj.VisitorEndDate == "") {
+                obj.VisitorEndDate = null;
+            }
+            if (obj.VisitorStartDate == "") {
+                obj.VisitorStartDate = null;
+            }
 
             fetch("https://localhost:7121/Visitor/VisitorSearch", {
                 method: "POST",
@@ -66,18 +152,42 @@
                 body: JSON.stringify(obj),
             }).then(data => data.json()).then(data => {
                 var result = "";
+                let checkOutRoomCount = [];
+                let VisitorCount = 0;
                 data.forEach(element => {
+                    checkOutRoomCount.push(element.VisitorRoomNumber);
+                    VisitorCount += element.VisitorCount;
                     result += `<tr>
-                                <td>${element.VisitorName}</td >
-                                <td>${element.VisitorSurName}</td >
-                                <td>${element.VisitorRoomNumber}</td >
-                                <td>${element.VisitorStartDate}</td >
-                                <td>${element.VisitorEndDate}</td >
-                                <td>${element.VisitorRoomPrice} ${element.VisitorPaymentCurrency}</td>
-                                <td style="max-width:100px;">${element.VisitorDescription == null ? ` -- ` : element.VisitorDescription}</td >
-                                <td><a class="btn btn-dark text-white" href="https://localhost:7121/Visitor/SelectedVisitors?VisitorId=${element.VisitorId}">Detay</a></td>
-                              </tr>`
+                                        <td>${element.VisitorName}</td >
+                                        <td>${element.VisitorSurName}</td >
+                                        <td>${element.VisitorRezervation}</td >
+                                        <td>${element.VisitorRoomNumber}</td >
+                                        <td>${element.VisitorStartDate}</td >
+                                        <td>${element.VisitorEndDate}</td >
+                                        <td>${element.VisitorRoomPrice.toString().substring(0, 5)} ${element.VisitorPaymentCurrency}</td>
+                                        <td><a class="btn btn-dark text-white" href="https://localhost:7121/Visitor/SelectedVisitors?VisitorId=${element.VisitorId}">Detay</a></td>
+                                      </tr>`
                 });
+                console.log(obj)
+                if (obj.VisitorStartDate == null && obj.VisitorName == "" && obj.VisitorSurName == "" && obj.VisitorRoomNumber == null && obj.VisitorEndDate != null) {
+                    $(".checkInContainer").addClass("d-none")
+                    $(".checkOutContainer").removeClass("d-none")
+                    const uniqueValues = [...new Set(checkOutRoomCount)];
+                    $("#CheckOutRoomCountElement").html(uniqueValues.length + " ")
+                    $("#CheckOutVisitorCountElement").html(VisitorCount + " ")
+                }
+                else if (obj.VisitorEndDate == null && obj.VisitorName == "" && obj.VisitorSurName == "" && obj.VisitorRoomNumber == null && obj.VisitorStartDate != null) {
+                    $(".checkOutContainer").addClass("d-none")
+                    $(".checkInContainer").removeClass("d-none")
+                    const uniqueValues = [...new Set(checkOutRoomCount)];
+                    $("#CheckInRoomCountElement").html(uniqueValues.length + " ")
+                    $("#CheckInVisitorCountElement").html(VisitorCount + " ")
+                }
+                else {
+                    $(".checkOutContainer").addClass("d-none")
+                    $(".checkInContainer").addClass("d-none")
+                }
+
                 $("table tbody").html("");
                 $("table tbody").append(result);
             }).catch(error => console.log(error));

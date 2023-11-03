@@ -15,6 +15,8 @@ namespace EntityLayer.DTOs
         [Required(ErrorMessage = "Ödenen tutar girilmelidir")]
         public double? VisitorPayment { get; set; }
         public int VisitorId { get; set; }
-        public Visitor? Visitor { get; set; }
+        public string? VisitorName { get; set; }
+        public double? VisitorTotalPrice { get; set; }
+        public Currency? VisitorTotalPriceCurrency { get; set; }
     }
 }

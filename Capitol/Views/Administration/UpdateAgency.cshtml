@@ -1,0 +1,24 @@
+﻿@model Agency
+
+<div class="col-5 container position-relative border shadow p-2 mt-3">
+    <section class="container">
+        <header style="font-weight: 600; color: #202040;">Acenta Ekle</header>
+        <form id="formRegister" asp-controller="Administration" asp-action="UpdateAgency" method="post" class="form">
+            <input type="text" asp-for="AgencyId" hidden />
+            <div class="column">
+                <div class="input-box">
+                    <label for="AgencyOrder" asp-for="AgencyOrderNumber">Sıralama Numarası</label>
+                    <input id="AgencyOrder" style="border:2px solid red; box-shadow:2px 2px 6px black;" type="number" asp-for="AgencyOrderNumber" autocomplete="off" required />
+                </div>
+                <div class="input-box">
+                    <label for="AgencyName" asp-for="AgencyName">Acenta İsmi</label>
+                    <input id="AgencyName" style="border:2px solid red; box-shadow:2px 2px 6px black;" type="text" asp-for="AgencyName" autocomplete="off" required />
+                </div>
+            </div>
+            <button>Güncelle</button>
+        </form>
+    </section>
+</div>
+@section Scripts{
+    <partial name="_ValidationScriptsPartial.cshtml"/>
+}

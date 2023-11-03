@@ -11,13 +11,16 @@ namespace EntityLayer.DTOs
 {
     public class UpdateVisitorDTO
     {
+        public UpdateVisitorDTO()
+        {
+            VisitorProperties = new();
+        }
         [Key]
         public int VisitorId { get; set; }
         public int VisitorState { get; set; }
-        [Required(ErrorMessage = "Ziyaretçi adı girilmelidir")]
-        public string VisitorName { get; set; }
-        public string? VisitorSurName { get; set; } 
+        public List<VisitorProperty>? VisitorProperties { get; set; }
         public double? VisitorRoomPrice { get; set; }
+        public double? VisitorTotalRoomPrice { get; set; }
         public string? VisitorPhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Başlangıç tarihi seçilmelidir")]
@@ -30,8 +33,13 @@ namespace EntityLayer.DTOs
         public Currency? VisitorPaymentCurrency { get; set; }
         public string? VisitorDescription { get; set; }
         public int? VisitorCount { get; set; }
-        public Rezervation? VisitorRezervation { get; set; }
+        public string? VisitorRezervation { get; set; }
         public bool VisitorPaymentIsDone { get; set; }
+        public DateTime? VisitorAddedDate { get; set; }
+        public bool VisitorDontChangeRoom { get; set; }
+        public string? VisitorFileUrl { get; set; }
+        public int? VisitorPreviusId { get; set; }
+        public int? VisitorNextId { get; set; }
 
     }
 }

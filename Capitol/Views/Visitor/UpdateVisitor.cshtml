@@ -1,22 +1,66 @@
 ﻿@using EntityLayer.Entities
 @model UpdateVisitorDTO
 
-<div class="col-5 container border shadow p-2 mt-3">
+
+<style>
+    #addVisitorCircle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 60px;
+        font-weight: 500;
+        color: silver;
+        background-image: linear-gradient(#202040,#00337C);
+        height: 50px;
+        width: 50px;
+        border: 3px solid black;
+        border-radius: 50px;
+        box-shadow: 2px 2px 4px black;
+        cursor: pointer;
+    }
+
+        #addVisitorCircle:hover {
+            background-image: linear-gradient(white,white);
+            border: 3px solid #202040;
+            color: black;
+        }
+</style>
+
+<div class="col-5 container position-relative border shadow p-2 mt-3">
     <section class="container">
         <header style="font-weight: 600; color: #202040;">Ziyaretçi Güncelleme Formu</header>
-        <form id="formRegister" asp-controller="Visitor" asp-action="UpdateVisitor" method="post" class="form">
+        <form id="formRegister" asp-controller="Visitor" asp-action="UpdateVisitor" enctype="multipart/form-data" method="post" class="form">
             <input id="visitorIdInput" hidden asp-for="VisitorId" />
             <input hidden asp-for="VisitorState" />
             <input hidden asp-for="VisitorPaymentIsDone" />
+            <input hidden asp-for="VisitorAddedDate" />
+            <input hidden asp-for="VisitorPreviusId" />
+            <input hidden asp-for="VisitorNextId" />
             <input hidden name="previusUrl" value="@ViewBag.previusUrl" />
+            <div id="nameMultipile">
+                @for (int i = 0; i < Model.VisitorProperties?.Count(); i++)
+                {
+                    <div class="column">
+                        <div class="input-box">
+                            <label>Adı</label>
+                            <input style="border:2px solid red; box-shadow:2px 2px 6px black;" name="names" type="text" placeholder="Adını giriniz" autocomplete="off" value="@Model.VisitorProperties[i].VisitorName">
+                        </div>
+                        <div class="input-box">
+                            <label>Soyadı</label>
+                            <input type="text" placeholder="Soyadını giriniz" name="surnames" autocomplete="off" value="@Model.VisitorProperties[i].VisitorSurName" />
+                        </div>
+                    </div>
+
+                }
+            </div>
             <div class="column">
                 <div class="input-box">
-                    <label asp-for="VisitorName">Adı</label>
-                    <input style="border:2px solid red; box-shadow:2px 2px 6px black;" type="text" asp-for="VisitorName" placeholder="Adını giriniz" autocomplete="off">
+                    <label for="CheckInDate" asp-for="VisitorStartDate">Giriş Tarihi</label>
+                    <input id="CheckInDate" style="border:2px solid red; box-shadow:2px 2px 6px black;" type="date" asp-for="VisitorStartDate" autocomplete="off" required />
                 </div>
                 <div class="input-box">
-                    <label asp-for="VisitorSurName">Soyadı</label>
-                    <input type="text" asp-for="VisitorSurName" placeholder="Soyadını giriniz" autocomplete="off" />
+                    <label for="CheckOutDate" asp-for="VisitorEndDate">Çıkış Tarihi</label>
+                    <input id="CheckOutDate" style="border:2px solid red; box-shadow:2px 2px 6px black;" type="date" asp-for="VisitorEndDate" autocomplete="off" required />
                 </div>
                 <div class="input-box">
                     <label asp-for="VisitorRoomNumber">Oda Numarası</label>
@@ -62,21 +106,15 @@
             </div>
             <div class="column">
                 <div class="input-box">
-                    <label for="CheckInDate" asp-for="VisitorStartDate">Giriş Tarihi</label>
-                    <input id="CheckInDate" style="border:2px solid red; box-shadow:2px 2px 6px black;" type="date" asp-for="VisitorStartDate" autocomplete="off" required />
-                </div>
-                <div class="input-box">
-                    <label for="CheckOutDate" asp-for="VisitorEndDate">Çıkış Tarihi</label>
-                    <input id="CheckOutDate" style="border:2px solid red; box-shadow:2px 2px 6px black;" type="date" asp-for="VisitorEndDate" autocomplete="off" required />
-                </div>
-            </div>
-            <div class="column">
-                <div class="input-box">
                     <label asp-for="VisitorRezervation">Rezervazyon Tipi</label>
                     <div class="column">
                         <div class="select-box">
-                            <select asp-for="VisitorRezervation" asp-items="@Html.GetEnumSelectList<Rezervation>()">
+                            <select asp-for="VisitorRezervation">
                                 <option selected disabled hidden>Rezervasyon</option>
+                                <option value="Agency1">Agency1</option>
+                                <option value="Agency2">Agency2</option>
+                                <option value="Agency3">Agency3</option>
+                                <option value="Agency4">Agency4</option>
                             </select>
                         </div>
                     </div>
@@ -85,8 +123,8 @@
                     <label asp-for="VisitorPhoneNumber">Telefon Numarası</label>
                     <input type="tel" asp-for="VisitorPhoneNumber" placeholder="Telefon numarası giriniz" autocomplete="off" />
                 </div>
-                <div style="width:250px;" class="input-box">
-                    <label asp-for="VisitorCount">Kişi Sayısı</label>
+                <div style="width: 280px;" class="input-box">
+                    <label asp-for="VisitorCount">Konuk Sayısı</label>
                     <div class="column">
                         <div class="select-box">
                             <select asp-for="VisitorCount">
@@ -95,6 +133,7 @@
                                 <option>2</option>
                                 <option>3</option>
                                 <option>4</option>
+                                <option>5</option>
                             </select>
                         </div>
                     </div>
@@ -106,109 +145,237 @@
                     <input type="checkbox" id="DoPayment" name="DoPayment" value="true" />
                 </div>
                 <div class="input-box">
-                    <label asp-for="VisitorRoomPrice">Oda Fiyatı</label>
-                    <input type="number" step="any" asp-for="VisitorRoomPrice" placeholder="Oda fiyatını giriniz" autocomplete="off" />
+                    <label class="roomPriceLabel d-none" asp-for="VisitorRoomPrice">Oda Fiyatı</label>
+                    <input class="roomPrice d-none" type="number" step="any" asp-for="VisitorRoomPrice" placeholder="Oda fiyatını yada" autocomplete="off" />
+                </div>
+                <div class="input-box">
+                    <label class="totalRoomPriceLabel d-none" asp-for="VisitorTotalRoomPrice">Toplam Fiyat</label>
+                    <input class="totalRoomPrice d-none" type="number" step="any" asp-for="VisitorTotalRoomPrice" placeholder="Toplam Oda fiyatını giriniz" autocomplete="off" />
                 </div>
                 <div class="input-box">
                     <label asp-for="VisitorPaymentCurrency">Para Birimi</label>
                     <div class="column">
                         <div class="select-box">
-                            <select asp-for="VisitorPaymentCurrency" asp-items="@Html.GetEnumSelectList<Currency>()">
+                            <select class="currency" asp-for="VisitorPaymentCurrency" asp-items="@Html.GetEnumSelectList<Currency>()">
                                 <option selected disabled hidden>Para Birimi</option>
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="input-box">
-                <label style="display:block" asp-for="VisitorDescription">Not</label>
-                <textarea asp-for="VisitorDescription" placeholder="..." autocomplete="off"></textarea>
+            <div class="column">
+                <div class="input-box">
+                    <label style="display:block" asp-for="VisitorDescription">Not</label>
+                    <textarea asp-for="VisitorDescription" placeholder="..." autocomplete="off"></textarea>
+                </div>
+                <div class="input-box">
+                    <label asp-for="VisitorFileUrl">Dosya Ekle</label>
+                    <input type="file" name="File" />
+                    <input hidden type="text" asp-for="VisitorFileUrl" />
+                </div>
+                <div style="width:100px" class="input-box">
+                    <div class="d-flex justify-content-center fw-bolder">
+                        <label class="text-danger" for="DoPayment">(D)</label>
+                    </div>
+                    <input type="checkbox" asp-for="VisitorDontChangeRoom" name="DontChangeRoom" value="true" />
+                </div>
             </div>
             <button>Güncelle</button>
-            <div class="position-absolute d-flex text-danger p-3" style="top:150px; left:150px;" asp-validation-summary="All"></div>
+            <div class="position-absolute d-flex row text-danger p-3" style="top:120px; left:-480px;">
+                <div>
+                    <ul class="customError">
+                    </ul>
+                </div>
+            </div>
         </form>
     </section>
-
+    <div id="add" class="d-flex justify-content-center position-absolute mt-5" style="top:80px; user-select:none; right:-80px;">
+        <div id="addVisitorCircle">
+            +
+        </div>
+    </div>
 </div>
 
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial.cshtml" />
     <script>
+
+
+
+        if ($(".roomPrice").val() >= 1) {
+            $(".totalRoomPrice").addClass("d-none")
+            $(".totalRoomPriceLabel").addClass("d-none")
+        }
+        else {
+            $(".totalRoomPrice").removeClass("d-none")
+            $(".totalRoomPriceLabel").removeClass("d-none")
+        }
+        if ($(".totalRoomPrice").val() >= 1) {
+            $(".roomPrice").addClass("d-none")
+            $(".roomPriceLabel").addClass("d-none")
+        }
+        else {
+            $(".roomPrice").removeClass("d-none")
+            $(".roomPriceLabel").removeClass("d-none")
+        }
+
+        $(".roomPrice").on("input", (e) => {
+            if (e.currentTarget.value >= 1) {
+                $(".totalRoomPrice").addClass("d-none")
+                $(".totalRoomPriceLabel").addClass("d-none")
+            }
+            else {
+                $(".totalRoomPrice").removeClass("d-none")
+                $(".totalRoomPriceLabel").removeClass("d-none")
+            }
+        })
+
+        $(".totalRoomPrice").on("input", (e) => {
+            if (e.currentTarget.value >= 1) {
+                $(".roomPrice").addClass("d-none")
+                $(".roomPriceLabel").addClass("d-none")
+            }
+            else {
+                $(".roomPrice").removeClass("d-none")
+                $(".roomPriceLabel").removeClass("d-none")
+            }
+        })
+
+        $("#CheckInDate").on("change", () => {
+
+            var CheckInDateParts = $("#CheckInDate").val().split('-');
+
+            var CheckInYear = parseInt(CheckInDateParts[0]);
+            var CheckInMonth = parseInt(CheckInDateParts[1]) - 1;
+            var CheckInDay = parseInt(CheckInDateParts[2]);
+
+            var checkInDate = new Date(CheckInYear, CheckInMonth, CheckInDay);
+
+            var CheckOutDateParts = $("#CheckOutDate").val().split('-');
+
+            var CheckOutYear = parseInt(CheckOutDateParts[0]);
+            var CheckOutMonth = parseInt(CheckOutDateParts[1]) - 1;
+            var CheckOutDay = parseInt(CheckOutDateParts[2]);
+
+            var checkOutDate = new Date(CheckOutYear, CheckOutMonth, CheckOutDay);
+
+            if (checkInDate.getTime() > checkOutDate.getTime()) {
+                document.getElementById("CheckOutDate").value = $("#CheckInDate").val();
+            }
+        })
+
+        $("#add").on("click", () => {
+            let element = `
+                                                        <div class="column">
+                                                            <div class="input-box">
+                                                                <label asp-for="VisitorName">Adı</label>
+                                                                <input style="border:2px solid red; box-shadow:2px 2px 6px black;" type="text" name="names" placeholder="Adını giriniz" autocomplete="off">
+                                                            </div>
+                                                            <div class="input-box">
+                                                                <label asp-for="VisitorSurName">Soyadı</label>
+                                                                <input type="text" name="surnames" placeholder="Soyadını giriniz" autocomplete="off" />
+                                                            </div>
+                                                        </div>`
+            $("#nameMultipile").append(element)
+        })
+
+
         async function FetchApi(url) {
             let data = await fetch(url).then(data => data.json())
             return data;
         }
-        var newCheckInDateControl = new Date(new Date(document.getElementById("CheckInDate").value).getFullYear(), new Date(document.getElementById("CheckInDate").value).getMonth() + 1, new Date(document.getElementById("CheckInDate").value).getDate()).getTime()
-        var newCheckOutDateControl = new Date(new Date(document.getElementById("CheckOutDate").value).getFullYear(), new Date(document.getElementById("CheckOutDate").value).getMonth() + 1, new Date(document.getElementById("CheckOutDate").value).getDate()).getTime()
-        var newRoomNumberControl = document.getElementById("RoomNumber").value;
+        var oldCheckInDate = new Date(new Date(document.getElementById("CheckInDate").value).getFullYear(), new Date(document.getElementById("CheckInDate").value).getMonth() + 1, new Date(document.getElementById("CheckInDate").value).getDate()).getTime()
+        var oldCheckOutDate = new Date(new Date(document.getElementById("CheckOutDate").value).getFullYear(), new Date(document.getElementById("CheckOutDate").value).getMonth() + 1, new Date(document.getElementById("CheckOutDate").value).getDate()).getTime()
+        var oldRoomNumber = document.getElementById("RoomNumber").value;
 
         var form = document.getElementById("formRegister");
         form.addEventListener("submit", function (e) {
-            var name = $("input[name='VisitorName']").val()
+            e.preventDefault();
+            var name = true;
+            document.querySelectorAll("input[name='names']").forEach(nameTest => {
+
+                if (nameTest.value == "" || nameTest.value == null) {
+                    name = false;
+                }
+            })
             var roomnumber = $("select[name='VisitorRoomNumber']").val()
             var startdate = $("input[name='VisitorStartDate']").val()
             var enddate = $("input[name='VisitorEndDate']").val()
-            if (name && roomnumber && startdate && enddate) {
-                if ($("#DoPayment").is(':checked') != true) {
-                    e.preventDefault();
-                    FetchApi("https://localhost:7121/Visitor/CheckForCrashDate").then(visitors => {
-                        if (visitors.length <= 0) {
-                            form.submit();
-                        }
-                        let checkState = true;
-                        visitors.forEach((visitor, index) => {
-                            let roomNumber = document.getElementById("RoomNumber").value;
+            let error = "";
+            if (startdate > enddate && enddate != "" && startdate != "")
+                error += "<li>Çıkış tarihi Giriş tarihinden önce olamaz.</li>";
+            if (enddate == "")
+                error += "<li>Bitiş tarihi seçilmelidir.</li>";
+            if (startdate == "")
+                error += "<li>Giriş tarihi seçilmelidi.r</li>";
+            if (name == false)
+                error += "<li>Rezervasyon ismi girilmelidir.</li>";
+            if (startdate == enddate)
+                error += "<li>Giriş ve Çıkış tarihi aynı olamaz.</li>";
+            if ($("#DoPayment").is(':checked') == true && !(($(".roomPrice").val() != "" || $(".totalRoomPrice").val() != "") && $(".currency").val() != null))
+                error += "<li>Fiyat bilgileri girilmelidir.</li>";
+            $(".customError").html(error);
 
-                            var visitorCheckInDate = new Date(new Date(visitor.visitorStartDate).getFullYear(), new Date(visitor.visitorStartDate).getMonth() + 1, new Date(visitor.visitorStartDate).getDate()).getTime()
+            var newCheckInDate = new Date(new Date(document.getElementById("CheckInDate").value).getFullYear(), new Date(document.getElementById("CheckInDate").value).getMonth() + 1, new Date(document.getElementById("CheckInDate").value).getDate()).getTime()
 
-                            var visitorCheckOutDate = new Date(new Date(visitor.visitorEndDate).getFullYear(), new Date(visitor.visitorEndDate).getMonth() + 1, new Date(visitor.visitorEndDate).getDate()).getTime()
+            var newCheckOutDate = new Date(new Date(document.getElementById("CheckOutDate").value).getFullYear(), new Date(document.getElementById("CheckOutDate").value).getMonth() + 1, new Date(document.getElementById("CheckOutDate").value).getDate()).getTime()
 
-                            var newCheckInDate = new Date(new Date(document.getElementById("CheckInDate").value).getFullYear(), new Date(document.getElementById("CheckInDate").value).getMonth() + 1, new Date(document.getElementById("CheckInDate").value).getDate()).getTime()
-
-                            var newCheckOutDate = new Date(new Date(document.getElementById("CheckOutDate").value).getFullYear(), new Date(document.getElementById("CheckOutDate").value).getMonth() + 1, new Date(document.getElementById("CheckOutDate").value).getDate()).getTime()
-
-
-                            if (newCheckInDateControl == newCheckInDate && newCheckOutDateControl == newCheckOutDate && roomNumber == newRoomNumberControl) {
-                                form.submit();
-                                console.log("Not Changed")
-                            }
-
-                            else if (visitor.visitorRoomNumber == roomNumber && visitor.visitorCount <= 1 && visitors.length > 1 && $("#visitorIdInput").val() != visitor.visitorId) {
-
-                                if ((newCheckInDate >= visitorCheckInDate && newCheckOutDate <= visitorCheckOutDate) || (newCheckInDate <= visitorCheckInDate && newCheckOutDate >= visitorCheckOutDate) || newCheckInDate == visitorCheckInDate || newCheckOutDate == visitorCheckOutDate || (newCheckInDate > visitorCheckInDate && newCheckInDate < visitorCheckOutDate) || (newCheckOutDate > visitorCheckInDate && newCheckOutDate < visitorCheckOutDate)) {
-                                    console.log("try")
-                                    checkState = false;
-                                    Swal.fire({
-                                        title: 'Oda bu tarihlerde dolu?',
-                                        text: "Hatırlatma",
-                                        icon: 'warning',
-                                        showCancelButton: true,
-                                        confirmButtonColor: '#3085d6',
-                                        cancelButtonColor: '#d33',
-                                        confirmButtonText: 'Evet, Onayla',
-                                        cancelButtonText: 'İptal',
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            Swal.fire(
-                                                'Onaylandi!',
-                                                '',
-                                                'success',
-                                                setTimeout(() => {
-                                                    form.submit();
-                                                    console.log("error")
-                                                }, 500)
-                                            )
-                                        }
-                                    })
-                                }
-                            } if (index == (visitors.length - 1) && checkState) {
-                                form.submit();
-                                console.log("Done")
-                            }
-                        })
-                    })
+            if (name && !isNaN(roomnumber) && startdate && enddate && (enddate > startdate) && error=="") {
+                e.preventDefault();
+                if (oldCheckInDate == newCheckInDate && oldCheckOutDate == newCheckOutDate && roomnumber == oldRoomNumber) {
+                    form.submit();
+                    console.log("Not Changed")
+                    return;
                 }
+                FetchApi(`https://localhost:7121/Visitor/CheckForCrashDate?startDate=${startdate}&endDate=${enddate}&roomNumber=${roomnumber}`).then(visitors => {
+                    if (visitors.length <= 0) {
+                        form.submit();
+                    }
+                    let checkState = true;
+                    //Döngü
+                    visitors.forEach((visitor, index) => {
+                        let roomNumber = document.getElementById("RoomNumber").value;
+                        console.log(roomNumber)
+                        var visitorCheckInDate = new Date(new Date(visitor.visitorStartDate).getFullYear(), new Date(visitor.visitorStartDate).getMonth() + 1, new Date(visitor.visitorStartDate).getDate()).getTime()
+
+                        var visitorCheckOutDate = new Date(new Date(visitor.visitorEndDate).getFullYear(), new Date(visitor.visitorEndDate).getMonth() + 1, new Date(visitor.visitorEndDate).getDate()).getTime()
+
+
+                        if (visitor.visitorRoomNumber == roomNumber && visitors.length > 1 && $("#visitorIdInput").val() != visitor.visitorId) {
+                            console.log(index)
+                            if ((newCheckInDate >= visitorCheckInDate && newCheckOutDate <= visitorCheckOutDate) || (newCheckInDate <= visitorCheckInDate && newCheckOutDate >= visitorCheckOutDate) || newCheckInDate == visitorCheckInDate || newCheckOutDate == visitorCheckOutDate || (newCheckInDate > visitorCheckInDate && newCheckInDate < visitorCheckOutDate) || (newCheckOutDate > visitorCheckInDate && newCheckOutDate < visitorCheckOutDate)) {
+                                console.log("try")
+                                checkState = false;
+                                Swal.fire({
+                                    title: 'Oda bu tarihlerde dolu?',
+                                    text: "Hatırlatma",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Evet, Onayla',
+                                    cancelButtonText: 'İptal',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        Swal.fire(
+                                            'Onaylandi!',
+                                            '',
+                                            'success',
+                                            setTimeout(() => {
+                                                form.submit();
+                                                console.log("error")
+                                            }, 500)
+                                        )
+                                    }
+                                })
+                            }
+                        } if (index == (visitors.length - 1) && checkState) {
+                            form.submit();
+                            console.log("Done")
+                        }
+                    })
+                })
             }
         })
     </script>

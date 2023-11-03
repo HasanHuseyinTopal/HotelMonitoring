@@ -14,6 +14,9 @@ namespace DataAccessLayer.Abstract
         IPaymentDal paymentDal { get; }
         IFinancialDal financialDal { get; } 
         IReportDal ReportDal { get; }   
+        IVisitorPropertyDal visitorPropertyDal { get; }
+        IVisitorHistoryDal visitorHistoryDal { get; }
+        IAgencyDal agencyDal { get; }
         void Save();
     }
 }

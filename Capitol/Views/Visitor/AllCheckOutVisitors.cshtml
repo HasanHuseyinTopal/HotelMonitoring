@@ -7,6 +7,7 @@
             <tr>
                 <th>Adı</th>
                 <th>Soyadı</th>
+                <th>Rezervasyon</th>
                 <th>Kişi Sayısı</th>
                 <th>Oda No</th>
                 <th>Durum</th>
@@ -17,10 +18,6 @@
                 <th>Not</th>
                 <th>Ödeme</th>
                 <th>Detay</th>
-                <th>Güncelle</th>
-                <th>Giriş</th>
-                <th>Çıkış</th>
-                <th>Sil</th>
             </tr>
         </thead>
         <tbody>
@@ -29,6 +26,7 @@
                 <tr>
                     <td>@visitor.VisitorName</td>
                     <td>@visitor.VisitorSurName</td>
+                    <td>@visitor.VisitorRezervation</td>
                     <td>@visitor.VisitorCount</td>
                     <td>@visitor.VisitorRoomNumber</td>
                     <td style="color:white; background-image:linear-gradient(#820000,#B70404)">Çıkış</td>
@@ -39,10 +37,6 @@
                     <td>@(visitor.VisitorDescription != null ? "Var":"Yok")</td>
                     <td style=" width:1px; "><img style="height: 100%; width: 100%; border-radius:10px;" src="@(visitor.VisitorPaymentIsDone==false ?"/Images/cross.jpg":"/Images/thick.jpg")" /></td>
                     <td><a class="btn btn-dark text-white" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-visitorId="@visitor.VisitorId">Detay</a></td>
-                    <td><a class="btn btn-warning" asp-controller="Visitor" asp-action="UpdateVisitor" asp-route-id="@visitor.VisitorId">Güncelle</a></td>
-                    <td><a class="btn btn-primary" asp-controller="Visitor" asp-action="CheckInVisitor" asp-route-id="@visitor.VisitorId">Giriş</a></td>
-                    <td><a class="btn btn-info" asp-controller="Visitor" asp-action="CheckOutVisitor" asp-route-id="@visitor.VisitorId">Çıkış</a></td>
-                    <td><a class="Delete btn btn-danger" asp-controller="Visitor" asp-action="DeleteVisitor" asp-route-id="@visitor.VisitorId">Sil</a></td>
                 </tr>
             }
         </tbody>

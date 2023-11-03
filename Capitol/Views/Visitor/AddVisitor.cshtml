@@ -28,69 +28,98 @@
 <div class="col-5 container position-relative border shadow p-2 mt-3">
     <section class="container">
         <header style="font-weight: 600; color: #202040;">Ziyaretçi Ekle</header>
-        <form id="formRegister" asp-controller="Visitor" asp-action="AddVisitor" method="post" class="form">
+        <form id="formRegister" asp-controller="Visitor" asp-action="AddVisitor" method="post" enctype="multipart/form-data" class="form">
             <input hidden name="previusUrl" value="@ViewBag.previusUrl" />
-            <div id="nameMultipile">
-                <div class="column">
-                    <div class="input-box">
-                        <label>Adı</label>
-                        <input style="border:2px solid red; box-shadow:2px 2px 6px black;" type="text" name="names" placeholder="Adını giriniz" autocomplete="off">
-                    </div>
-                    <div class="input-box">
-                        <label>Soyadı</label>
-                        <input type="text" name="surnames" placeholder="Soyadını giriniz" autocomplete="off" />
-                    </div>
-                    <div class="input-box">
-                        <label>Oda Numarası</label>
+            <input hidden asp-for="VisitorPreviusId" />
+            @if (Model != null)
+            {
+                <div id="nameMultipile">
+                    @foreach (var names in Model.VisitorPropertyDTOs)
+                    {
                         <div class="column">
-                            <div class="select-box">
-                                <select id="RoomNumber" style="border:2px solid red; box-shadow:2px 2px 6px black; border-radius:6px;" name="roomnumbers">
-                                    @if (ViewBag.Blokaj != null)
-                                    {
-                                        <option selected>@ViewBag.Blokaj</option>
-                                    }
-                                    else
-                                    {
-                                        <option selected disabled hidden>Oda Numarası</option>
-                                        <option>101</option>
-                                        <option>102</option>
-                                        <option>103</option>
-                                        <option>104</option>
-                                        <option>201</option>
-                                        <option>202</option>
-                                        <option>203</option>
-                                        <option>204</option>
-                                        <option>301</option>
-                                        <option>302</option>
-                                        <option>303</option>
-                                        <option>304</option>
-                                        <option>401</option>
-                                        <option>402</option>
-                                        <option>403</option>
-                                        <option>404</option>
-                                        <option>501</option>
-                                        <option>502</option>
-                                        <option>503</option>
-                                        <option>601</option>
-                                        <option>602</option>
-                                        <option>603</option>
-                                        <option>701</option>
-                                        <option>702</option>
-                                    }
-                                </select>
+                            <div class="input-box">
+                                <label>Adı</label>
+                                <input style="border:2px solid red; box-shadow:2px 2px 6px black;" type="text" name="names" placeholder="Adını giriniz" value="@names.VisitorName" autocomplete="off">
                             </div>
+                            <div class="input-box">
+                                <label>Soyadı</label>
+                                <input type="text" name="surnames" value="@names.VisitorSurName" placeholder="Soyadını giriniz" autocomplete="off" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div id="nameMultipile">
+                    <div class="column">
+                        <div class="input-box">
+                            <label>Adı</label>
+                            <input style="border:2px solid red; box-shadow:2px 2px 6px black;" type="text" name="names" placeholder="Adını giriniz" autocomplete="off">
+                        </div>
+                        <div class="input-box">
+                            <label>Soyadı</label>
+                            <input type="text" name="surnames" placeholder="Soyadını giriniz" autocomplete="off" />
                         </div>
                     </div>
                 </div>
-            </div>
+            }
             <div class="column">
                 <div class="input-box">
                     <label for="CheckInDate" asp-for="VisitorStartDate">Giriş Tarihi</label>
-                    <input id="CheckInDate" style="border:2px solid red; box-shadow:2px 2px 6px black;" type="date" asp-for="VisitorStartDate" autocomplete="off" required />
+                    @if (int.Parse(ViewBag.CheckInDate.ToString("yyyy")) >= 1000 && ViewBag.CheckInDate != null)
+                    {
+                        <input id="CheckInDate" style="border:2px solid red; box-shadow:2px 2px 6px black;" type="date" asp-for="VisitorStartDate" value="@(ViewBag.CheckInDate.ToString("yyyy-MM-dd"))" autocomplete="off" required />
+                    }
+                    else
+                    {
+                        <input id="CheckInDate" style="border:2px solid red; box-shadow:2px 2px 6px black;" type="date" asp-for="VisitorStartDate" autocomplete="off" required />
+                    }
                 </div>
                 <div class="input-box">
                     <label for="CheckOutDate" asp-for="VisitorEndDate">Çıkış Tarihi</label>
                     <input id="CheckOutDate" style="border:2px solid red; box-shadow:2px 2px 6px black;" type="date" asp-for="VisitorEndDate" autocomplete="off" required />
+                </div>
+                <div class="input-box">
+                    <label asp-for="VisitorRoomNumber">Oda Numarası</label>
+                    <div class="column">
+                        <div class="select-box">
+                            <select id="RoomNumber" asp-for="VisitorRoomNumber" style="border:2px solid red; box-shadow:2px 2px 6px black; border-radius:6px;">
+                                @if (ViewBag.Blokaj != null)
+                                {
+                                    <option selected>@ViewBag.Blokaj</option>
+                                }
+                                else
+                                {
+                                    <option selected disabled hidden>Oda Numarası</option>
+                                    <option>101</option>
+                                    <option>102</option>
+                                    <option>103</option>
+                                    <option>104</option>
+                                    <option>201</option>
+                                    <option>202</option>
+                                    <option>203</option>
+                                    <option>204</option>
+                                    <option>301</option>
+                                    <option>302</option>
+                                    <option>303</option>
+                                    <option>304</option>
+                                    <option>401</option>
+                                    <option>402</option>
+                                    <option>403</option>
+                                    <option>404</option>
+                                    <option>501</option>
+                                    <option>502</option>
+                                    <option>503</option>
+                                    <option>601</option>
+                                    <option>602</option>
+                                    <option>603</option>
+                                    <option>701</option>
+                                    <option>702</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="column">
@@ -98,8 +127,12 @@
                     <label asp-for="VisitorRezervation">Rezervazyon Tipi</label>
                     <div class="column">
                         <div class="select-box">
-                            <select asp-for="VisitorRezervation" asp-items="@Html.GetEnumSelectList<Rezervation>()">
+                            <select asp-for="VisitorRezervation">
                                 <option selected disabled hidden>Rezervasyon</option>
+                                <option value="Agency1">Agency1</option>
+                                <option value="Agency2">Agency2</option>
+                                <option value="Agency3">Agency3</option>
+                                <option value="Agency4">Agency4</option>
                             </select>
                         </div>
                     </div>
@@ -108,8 +141,8 @@
                     <label asp-for="VisitorPhoneNumber">Telefon Numarası</label>
                     <input type="tel" asp-for="VisitorPhoneNumber" placeholder="Telefon numarası giriniz" autocomplete="off" />
                 </div>
-                <div style="width:250px;" class="input-box">
-                    <label asp-for="VisitorCount">Kişi Sayısı</label>
+                <div style="width:280px;" class="input-box">
+                    <label asp-for="VisitorCount">Konuk Sayısı</label>
                     <div class="column">
                         <div class="select-box">
                             <select asp-for="VisitorCount">
@@ -118,6 +151,7 @@
                                 <option>2</option>
                                 <option>3</option>
                                 <option>4</option>
+                                <option>5</option>
                             </select>
                         </div>
                     </div>
@@ -129,26 +163,47 @@
                     <input type="checkbox" id="DoPayment" name="DoPayment" value="true" />
                 </div>
                 <div class="input-box">
-                    <label asp-for="VisitorRoomPrice">Oda Fiyatı</label>
-                    <input type="number" step="any" asp-for="VisitorRoomPrice" placeholder="Oda fiyatını giriniz" autocomplete="off" />
+                    <label class="roomPriceLabel" asp-for="VisitorRoomPrice">Oda Fiyatı</label>
+                    <input class="roomPrice" type="number" step="any" asp-for="VisitorRoomPrice" placeholder="Oda fiyatını yada" autocomplete="off" />
+                </div>
+                <div class="input-box">
+                    <label class="totalRoomPriceLabel" asp-for="VisitorTotalRoomPrice">Toplam Fiyat</label>
+                    <input class="totalRoomPrice" type="number" step="any" asp-for="VisitorTotalRoomPrice" placeholder="Toplam Oda fiyatını giriniz" autocomplete="off" />
                 </div>
                 <div class="input-box">
                     <label asp-for="VisitorPaymentCurrency">Para Birimi</label>
                     <div class="column">
                         <div class="select-box">
-                            <select asp-for="VisitorPaymentCurrency" asp-items="@Html.GetEnumSelectList<Currency>()">
+                            <select class="currency" asp-for="VisitorPaymentCurrency" asp-items="@Html.GetEnumSelectList<Currency>()">
                                 <option selected disabled hidden>Para Birimi</option>
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="input-box">
-                <label style="display:block" asp-for="VisitorDescription">Not</label>
-                <textarea asp-for="VisitorDescription" placeholder="..." autocomplete="off"></textarea>
+            <div class="column">
+                <div class="input-box">
+                    <label style="display:block" asp-for="VisitorDescription">Not</label>
+                    <textarea asp-for="VisitorDescription" placeholder="..." autocomplete="off"></textarea>
+                </div>
+                <div class="input-box">
+                    <label asp-for="VisitorFileUrl">Dosya Ekle</label>
+                    <input type="file" name="File" />
+                </div>
+                <div style="width:100px" class="input-box">
+                    <div class="d-flex justify-content-center fw-bolder">
+                        <label class="text-danger" for="DoPayment">(D)</label>
+                    </div>
+                    <input type="checkbox" name="DontChangeRoom" value="true" />
+                </div>
             </div>
             <button>Kayıt</button>
-            <div class="position-absolute d-flex text-danger p-3" style="top:120px; left:-450px;" asp-validation-summary="All"></div>
+            <div class="position-absolute d-flex row text-danger p-3" style="top:120px; left:-480px;">
+                <div>
+                    <ul class="customError">
+                    </ul>
+                </div>
+            </div>
         </form>
     </section>
     <div id="add" class="d-flex justify-content-center position-absolute mt-5" style="top:80px; user-select:none; right:-80px;">
@@ -159,63 +214,46 @@
 </div>
 
 
-
 @section Scripts{
     <partial name="_ValidationScriptsPartial.cshtml" />
     <script>
-        $("#add").on("click", () => {
-            let element = `              <div class="column">
-                    <div class="input-box">
-                        <label asp-for="VisitorName">Adı</label>
-                        <input style="border:2px solid red; box-shadow:2px 2px 6px black;" type="text" name="names" placeholder="Adını giriniz" autocomplete="off">
-                    </div>
-                    <div class="input-box">
-                        <label asp-for="VisitorSurName">Soyadı</label>
-                        <input type="text" name="surnames" placeholder="Soyadını giriniz" autocomplete="off" />
-                    </div>
-                    <div class="input-box">
-                        <label asp-for="VisitorRoomNumber">Oda Numarası</label>
-                        <div class="column">
-                            <div class="select-box">
-                                <select id="RoomNumber" style="border:2px solid red; box-shadow:2px 2px 6px black; border-radius:6px;" name="roomnumbers">
-                                    @if (ViewBag.Blokaj != null)
-                                    {
-                                        <option selected>@ViewBag.Blokaj</option>
-                                    }
-                                    else
-                                    {
-                                        <option selected disabled hidden>Oda Numarası</option>
-                                        <option>101</option>
-                                        <option>102</option>
-                                        <option>103</option>
-                                        <option>104</option>
-                                        <option>201</option>
-                                        <option>202</option>
-                                        <option>203</option>
-                                        <option>204</option>
-                                        <option>301</option>
-                                        <option>302</option>
-                                        <option>303</option>
-                                        <option>304</option>
-                                        <option>401</option>
-                                        <option>402</option>
-                                        <option>403</option>
-                                        <option>404</option>
-                                        <option>501</option>
-                                        <option>502</option>
-                                        <option>503</option>
-                                        <option>601</option>
-                                        <option>602</option>
-                                        <option>603</option>
-                                        <option>701</option>
-                                        <option>702</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>`
 
+        $(".roomPrice").on("input", (e) => {
+            if (e.currentTarget.value >= 1) {
+                $(".totalRoomPrice").hide();
+                $(".totalRoomPriceLabel").hide();
+            }
+            else {
+                $(".totalRoomPrice").show();
+                $(".totalRoomPriceLabel").show();
+            }
+        })
+
+        $(".totalRoomPrice").on("input", (e) => {
+            if (e.currentTarget.value >= 1) {
+                $(".roomPrice").hide();
+                $(".roomPriceLabel").hide();
+            }
+            else {
+                $(".roomPrice").show();
+                $(".roomPriceLabel").show();
+            }
+        })
+
+        document.getElementById("CheckOutDate").value = $("#CheckInDate").val();
+
+        $("#add").on("click", () => {
+            let element = `
+                                                                                                                                                    <div class="column afterAdded">
+                                                                                                                                                        <div class="input-box">
+                                                                                                                                                            <label asp-for="VisitorName">Adı</label>
+                                                                                                                                                            <input style="border:2px solid red; box-shadow:2px 2px 6px black;" type="text" name="names" placeholder="Adını giriniz" autocomplete="off">
+                                                                                                                                                        </div>
+                                                                                                                                                        <div class="input-box">
+                                                                                                                                                            <label asp-for="VisitorSurName">Soyadı</label>
+                                                                                                                                                            <input type="text" name="surnames" placeholder="Soyadını giriniz" autocomplete="off" />
+                                                                                                                                                        </div>
+                                                                                                                                                    </div>`
             $("#nameMultipile").append(element)
         })
         async function FetchApi(url) {
@@ -225,9 +263,9 @@
         var form = document.getElementById("formRegister");
         form.addEventListener("submit", function (e) {
             var name = true;
-            var roomnumber = $("select[name='roomnumbers']").val()
             var startdate = $("input[name='VisitorStartDate']").val()
             var enddate = $("input[name='VisitorEndDate']").val()
+            let roomNumber = document.getElementById("RoomNumber").value;
             e.preventDefault();
 
             document.querySelectorAll("input[name='names']").forEach(nameTest => {
@@ -236,13 +274,36 @@
                     name = false;
                 }
             })
-            if (name && roomnumber && startdate && enddate ) {
-                FetchApi("https://localhost:7121/Visitor/CheckForCrashDate").then(visitors => {
+
+            let error = "";
+            if (startdate > enddate && enddate != "" && startdate != "")
+                error += "<li>Çıkış tarihi Giriş tarihinden önce olamaz.</li>";
+            if (enddate == "")
+                error += "<li>Bitiş tarihi seçilmelidir.</li>";
+            if (startdate == "")
+                error += "<li>Giriş tarihi seçilmelidir.</li>";
+            if (name == false)
+                error += "<li>Rezervasyon ismi girilmelidir.</li>";
+            if (startdate == enddate)
+                error += "<li>Giriş ve Çıkış tarihi aynı olamaz.</li>";
+            if ($("#DoPayment").is(':checked') == true && !(($(".roomPrice").val() != "" || $(".totalRoomPrice").val() != "") && $(".currency").val() != null))
+                error += "<li>Fiyat bilgileri girilmelidir.</li>";
+            $(".customError").html(error);
+
+
+            if (name && !isNaN(roomNumber) && startdate && enddate && (enddate > startdate) && error == "") {
+
+                var newCheckInDate = new Date(new Date(document.getElementById("CheckInDate").value).getFullYear(), new Date(document.getElementById("CheckInDate").value).getMonth() + 1, new Date(document.getElementById("CheckInDate").value).getDate()).getTime()
+
+                var newCheckOutDate = new Date(new Date(document.getElementById("CheckOutDate").value).getFullYear(), new Date(document.getElementById("CheckOutDate").value).getMonth() + 1, new Date(document.getElementById("CheckOutDate").value).getDate()).getTime()
+
+                FetchApi(`https://localhost:7121/Visitor/CheckForCrashDate?startDate=${startdate}&endDate=${enddate}&roomNumber=${roomNumber}`).then(visitors => {
                     if (visitors.length <= 0) {
-                        console.log("0")
                         form.submit();
                     }
                     let checkState = true;
+
+                    //Döngü
                     visitors.forEach((visitor, index) => {
                         let roomNumber = document.getElementById("RoomNumber").value;
                         console.log("start")
@@ -250,10 +311,6 @@
                             var visitorCheckInDate = new Date(new Date(visitor.visitorStartDate).getFullYear(), new Date(visitor.visitorStartDate).getMonth() + 1, new Date(visitor.visitorStartDate).getDate()).getTime()
 
                             var visitorCheckOutDate = new Date(new Date(visitor.visitorEndDate).getFullYear(), new Date(visitor.visitorEndDate).getMonth() + 1, new Date(visitor.visitorEndDate).getDate()).getTime()
-
-                            var newCheckInDate = new Date(new Date(document.getElementById("CheckInDate").value).getFullYear(), new Date(document.getElementById("CheckInDate").value).getMonth() + 1, new Date(document.getElementById("CheckInDate").value).getDate()).getTime()
-
-                            var newCheckOutDate = new Date(new Date(document.getElementById("CheckOutDate").value).getFullYear(), new Date(document.getElementById("CheckOutDate").value).getMonth() + 1, new Date(document.getElementById("CheckOutDate").value).getDate()).getTime()
 
 
                             if ((newCheckInDate >= visitorCheckInDate && newCheckOutDate <= visitorCheckOutDate) || (newCheckInDate <= visitorCheckInDate && newCheckOutDate >= visitorCheckOutDate) || newCheckInDate == visitorCheckInDate || newCheckOutDate == visitorCheckOutDate || (newCheckInDate >= visitorCheckInDate && newCheckInDate < visitorCheckOutDate) || (newCheckOutDate > visitorCheckInDate && newCheckOutDate <= visitorCheckOutDate)) {

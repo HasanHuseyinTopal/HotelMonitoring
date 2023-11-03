@@ -19,7 +19,8 @@ namespace Capitol.Utulities
             CreateMap<ReportsDTO, Report>();
             CreateMap<Report, ReportsDTO>();
             CreateMap<VisitorDetailsDTO, Visitor>();
-            CreateMap<Visitor, VisitorDetailsDTO>();
+            CreateMap<Visitor, VisitorDetailsDTO>().ForMember(x => x.Payments, opt => opt.Ignore());
+
         }
     }
 }

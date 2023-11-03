@@ -1,10 +1,5 @@
 ﻿using DataAccessLayer.Abstract;
-using DataAccessLayer.Concrate;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DataAccessLayer.Concrate
 {
@@ -16,6 +11,10 @@ namespace DataAccessLayer.Concrate
         private readonly Lazy<IPaymentDal> _PaymentDal;
         private readonly Lazy<IFinancialDal> _FinancialDal;
         private readonly Lazy<IReportDal> _ReportDal;
+        private readonly Lazy<IVisitorPropertyDal> _VisitorPropertyDal;
+        private readonly Lazy<IVisitorHistoryDal> _VisitorHistoryDal;
+        private readonly Lazy<IAgencyDal> _AgencyDal;
+
         public UnitOfWorkDal(CpContext cpContext)
         {
             _CpContext = cpContext;
@@ -24,6 +23,9 @@ namespace DataAccessLayer.Concrate
             _PaymentDal = new Lazy<IPaymentDal>(() => new PaymentDal(_CpContext));
             _FinancialDal = new Lazy<IFinancialDal>(() => new FinancialDal(_CpContext));
             _ReportDal = new Lazy<IReportDal>(() => new ReportDal(_CpContext));
+            _VisitorPropertyDal = new Lazy<IVisitorPropertyDal>(() => new VisitorPropertyDal(_CpContext));
+            _VisitorHistoryDal = new Lazy<IVisitorHistoryDal>(() => new VisitorHistoryDal(_CpContext));
+            _AgencyDal = new Lazy<IAgencyDal>(() => new AgencyDal(_CpContext));
 
         }
         public void Save()
@@ -35,6 +37,9 @@ namespace DataAccessLayer.Concrate
         public IPaymentDal paymentDal => _PaymentDal.Value;
         public IFinancialDal financialDal => _FinancialDal.Value;
         public IReportDal ReportDal => _ReportDal.Value;
+        public IVisitorPropertyDal visitorPropertyDal => _VisitorPropertyDal.Value;
+        public IVisitorHistoryDal visitorHistoryDal => _VisitorHistoryDal.Value;
+        public IAgencyDal agencyDal => _AgencyDal.Value;
     }
 }
 

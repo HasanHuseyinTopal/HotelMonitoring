@@ -1,0 +1,144 @@
+﻿@model AvailabilityDTO
+
+
+<style>
+    body{
+        user-select:none;
+    }
+    div span {
+        background-color: white;
+    }
+
+    .lines {
+        position: absolute;
+        background-color: black;
+        height: 350px;
+        width: 1px;
+        top: 47px;
+        z-index: -1;
+    }
+
+    .borderedDay {
+
+        height:420px !important;
+        border-radius:5px;
+        background-color:darkgreen;
+        opacity:0.4;
+    }
+    .Days:hover{
+        cursor:pointer;
+    }
+</style>
+
+<div class="position-absolute d-flex justify-content-center" style="top:100px; width:100%">
+    <span class="text-black" style=" font-weight:600; font-size:50px;">@DateTime.Now.AddMonths(Model.monthNumber).Year <span style="color:darkred;">-</span> @DateTime.Now.AddMonths(Model.monthNumber).ToString("MMMM")</span>
+</div>
+
+<div class="d-flex flex-row position-absolute" style="top:200px; left:450px;">
+    @for (int i = 1; i < Model.availabilty.GetLength(1); i++)
+    {
+
+        if (DateTime.Now.Day == i && DateTime.Now.Month == DateTime.Now.AddMonths(Model.monthNumber).Month)
+        {
+            <div class="text-success position-relative fw-bolder fs-3" style="height: 50px; width: 50px; border: 2px solid black; display: flex; justify-content: center; align-items: center;">
+                @i
+                <span class="lines"></span>
+            </div>
+        }
+        else if (DateTime.Now.Day > i && DateTime.Now.Month == DateTime.Now.AddMonths(Model.monthNumber).Month)
+        {
+            <div class="text-dark fw-bolder fs-3" style="height: 50px; opacity: 0.25; width: 50px; z-index: 1; display: flex; justify-content: center; align-items: center;">@i</div>
+
+        }
+        else
+        {
+            <div class="text-dark fw-bolder fs-3 Days d-flex align-items-start" style="margin-top:5px; height: 50px; width: 50px; z-index: 1; display: flex; justify-content: center; align-items: center;">@i</div>
+        }
+    }
+</div>
+
+<div class="position-absolute fs-5 fw-bolder" style="top:320px; left:50px;">
+    <div class="mx-4" style="height:35px; margin-bottom:50px;">
+        Ekonomik Tek Kişilik Oda
+    </div>
+    <div class="mx-4" style="height: 35px; margin-bottom: 50px; ">
+        Çift Kişilik Oda
+    </div>
+    <div class="mx-4" style="height: 35px; margin-bottom: 50px;">
+        Üç Kişilik Oda
+    </div>
+    <div class="mx-4" style="height: 35px; margin-bottom: 50px;">
+        Çift Kişilik Oda - Balkonlu
+    </div>
+</div>
+
+
+<div class="d-flex justify-content-center align-items-center user-select-none position-relative" style="height:600px; left:450px; width:1600px">
+    <div class=" d-flex flex-column" style="width:500px; height:1600px; transform:rotate(-90deg)">
+        @for (int i = 1; i < Model.availabilty.GetLength(1); i++)
+        {
+            if (DateTime.Now.Day > i && DateTime.Now.Month == DateTime.Now.AddMonths(Model.monthNumber).Month)
+            {
+                <div class="d-flex fs-4 fw-normal" style="height:50px; width:50px; opacity:0.25;">
+                    <div class="m-4" style="transform:rotate(90deg)">
+                        <span style="border: 1px solid black; padding: 12px; color: @(4-Model.availabilty[2, i].RoomCount<=1 ? "red":"black")">@((4 - Model.availabilty[2, i].RoomCount))</span>
+                    </div>
+                    <div class="m-4" style="transform:rotate(90deg)">
+                        <span style="border:1px solid black; padding:12px; color:@(3-Model.availabilty[3, i].RoomCount<=1 ? "red":"black")">@((3 - Model.availabilty[3, i].RoomCount))</span>
+                    </div>
+                    <div class="m-4" style="transform:rotate(90deg)">
+                        <span style="border: 1px solid black; padding: 12px; color: @(9-Model.availabilty[1, i].RoomCount<=1 ? "red":"black")">@((9 - Model.availabilty[1, i].RoomCount))</span>
+                    </div>
+                    <div class="m-4" style="transform:rotate(90deg)">
+                        <span style="border: 1px solid black; padding: 12px; color: @(8-Model.availabilty[0, i].RoomCount<=1 ? "red":"black")">@((8 - Model.availabilty[0, i].RoomCount))</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex fs-4 fw-normal" style="height:50px; width:50px;">
+                    <div class="m-4" style="transform:rotate(90deg)">
+                        <span style="border: 1px solid black; padding: 12px; color: @(4-Model.availabilty[2, i].RoomCount<=1 ? "red":"black")">@((4 - Model.availabilty[2, i].RoomCount))</span>
+                    </div>
+                    <div class="m-4" style="transform:rotate(90deg)">
+                        <span style="border:1px solid black; padding:12px; color:@(3-Model.availabilty[3, i].RoomCount<=1 ? "red":"black")">@((3 - Model.availabilty[3, i].RoomCount))</span>
+                    </div>
+                    <div class="m-4" style="transform:rotate(90deg)">
+                        <span style="border: 1px solid black; padding: 12px; color: @(9-Model.availabilty[1, i].RoomCount<=1 ? "red":"black")">@((9 - Model.availabilty[1, i].RoomCount))</span>
+                    </div>
+                    <div class="m-4" style="transform:rotate(90deg)">
+                        <span style="border: 1px solid black; padding: 12px; color: @(8-Model.availabilty[0, i].RoomCount<=1 ? "red":"black")">@((8 - Model.availabilty[0, i].RoomCount))</span>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<div>
+    <div class="d-flex justify-content-center ms-4">
+        <a id="previus" class="btn btn-outline-dark btn-lg mx-5"><<<</a>
+        <a id="next" class="btn btn-outline-dark btn-lg mx-5">>>></a>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+
+        $(".Days").on("click", (e) => {
+            $(e.currentTarget).toggleClass("borderedDay")
+        })
+
+     let monthNumber = @Model.monthNumber;
+        $("#next").on("click", () => {
+            monthNumber += 1;
+            window.location.href = "/Visitor/AvailabilityCheck?monthNumber=" + monthNumber;
+        })
+        $("#previus").on("click", () => {
+            monthNumber -= 1;
+            window.location.href = "/Visitor/AvailabilityCheck?monthNumber=" + monthNumber;
+        })
+    </script>
+}

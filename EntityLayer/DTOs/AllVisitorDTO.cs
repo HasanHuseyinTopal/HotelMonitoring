@@ -8,7 +8,8 @@ namespace EntityLayer.DTOs
         public int VisitorId { get; set; }
         public string VisitorName { get; set; }
         public string? VisitorSurName { get; set; }
-        public int VisitorLeftDays { get; set; }
+        public string? VisitorRezervation { get; set; }
+        public string? VisitorDescription { get; set; }
         public int VisitorTotalVisitDay { get; set; }
         public int VisitorState { get; set; }
         public DateTime VisitorStartDate { get; set; }
@@ -16,7 +17,6 @@ namespace EntityLayer.DTOs
         public int VisitorRoomNumber { get; set; }
         public int? VisitorCount { get; set; }
         public double? VisitorRoomPrice { get; set; }
-        public string? VisitorDescription { get; set; }
         public double? VisitorTotalPrice { get; set; }
         public Currency? VisitorPaymentCurrency { get; set; }
         public bool VisitorPaymentIsDone { get; set; }

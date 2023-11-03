@@ -1,0 +1,136 @@
+﻿@using EntityLayer.Entities
+@model PaymentDTO
+
+<style>
+    span {
+        font-weight: 700;
+    }
+
+    #addVisitorCircle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        font-weight: 500;
+        color: silver;
+        background-image: linear-gradient(#202040,#00337C);
+        height: 60px;
+        width: 60px;
+        border: 3px solid black;
+        border-radius: 30px;
+        box-shadow: 2px 2px 4px black;
+        cursor: pointer;
+    }
+
+        #addVisitorCircle:hover {
+            background-image: linear-gradient(white,white);
+            border: 3px solid #202040;
+            color: black;
+        }
+    .copyPayment{
+        height:40px;
+        width:40px;
+    }
+        .copyPayment:hover {
+            height: 50px;
+            width: 50px;
+        }
+</style>
+<div class="col-5 container border shadow p-2 mt-3">
+    <section class="container">
+        <header class="my-4" style="font-weight: 600; color: #202040;">Ziyaretçi Ödeme Formu</header>
+        <div class="d-flex align-items-center">
+            <div class="shadow-sm d-inline-block border fs-4 text-black border-5 rounded-3 p-3" style="background-image:linear-gradient(45deg,aqua,aqua,white,white)">
+                <span>@(Model.VisitorName)</span> <span style="font-weight:bolder; color:darkred;">//</span> <span id="paymentInput">@(Model.VisitorTotalPrice!.Value.ToString("0.00"))</span><span>@(Model.VisitorTotalPriceCurrency!.Value)</span>
+            </div>
+            <div class="mx-3 copyPayment d-flex">
+                <img  src="~/Images/copy.png" />
+            </div>
+        </div>
+        <form asp-controller="Visitor" asp-action="AddPaymentToVisitor" method="post" class="form">
+            <input hidden asp-for="VisitorId" />
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="d-flex justify-content-center align-items-center position-absolute" style="width:30%; top:180px; right:450px;">
+                    <button class="m-0 mx-3" style="width:30%; height:60px;">Ödeme Yap</button>
+                   
+                </div>
+
+                <div class="position-absolute d-flex text-danger p-3" style="top:150px; left:150px;" asp-validation-summary="All"></div>
+            </div>
+                <div class="column">
+                    <div class="input-box">
+                        <label asp-for="VisitorPayment">Ödenen Tutar</label>
+                        <input class="actualPayment" type="number" asp-for="VisitorPayment" placeholder="Ödenen tutarı giriniz" autocomplete="off" />
+                    </div>
+                    <div class="column">
+                        <div class="input-box">
+                            <label asp-for="VisitorPaymentDate">Ödeme Tarihi</label>
+                            <input type="date" asp-for="VisitorPaymentDate" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="input-box">
+                        <label asp-for="VisitorPaymentType">Ödeme Tipi</label>
+                        <div class="column">
+                            <div class="select-box">
+                                <select asp-for="VisitorPaymentType" asp-items="@Html.GetEnumSelectList<PaymentType>()">
+                                    <option selected disabled hidden>Ödeme Türü</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-box">
+                        <label asp-for="VisitorPaymentCurreny">Para Birimi</label>
+                        <div class="column">
+                            <div class="select-box">
+                                <select asp-for="VisitorPaymentCurreny" asp-items="@Html.GetEnumSelectList<Currency>()">
+                                    <option selected disabled hidden>Para Birimi</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </form>
+        <hr class="mt-4"  style="width:100%; height:10px; background-color:wheat; border-radius:5px;" />
+    </section>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial.cshtml" />
+    <script>
+
+        $(".copyPayment").on("click", () => {
+            let value = $("#paymentInput").html();
+            value = value.replace(",", ".");
+            $($(".actualPayment")[0]).val(Number(value));
+        })
+
+        $(".DeletePaymet").on("click", (e) => {
+            e.preventDefault();
+            let url = e.currentTarget.getAttribute('href')
+            Swal.fire({
+                title: 'Ödemeyi silmek üzeresiniz?',
+                text: "Bunu geri alamazsın!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, Sil',
+                cancelButtonText: 'İptal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Silindi!',
+                        '',
+                        'success',
+                        setTimeout(() => {
+                            window.location.href = url
+                        }, 500)
+                    )
+                }
+            })
+        })
+    </script>
+}
+

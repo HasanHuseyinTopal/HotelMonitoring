@@ -12,11 +12,12 @@ namespace EntityLayer.DTOs
         public string VisitorName { get; set; }
         public string? VisitorSurName { get; set; }
         public string VisitorStartDate { get; set; }
+        public int VisitorCount { get; set; }
         public string VisitorEndDate { get; set; }
         public int VisitorRoomNumber { get; set; }
+        public string? VisitorRezervation { get; set; }
         public string? VisitorPaymentCurrency { get; set; }
         public string? VisitorRoomPrice { get; set; }
-        public string? VisitorDescription { get; set; }
 
     }
 }

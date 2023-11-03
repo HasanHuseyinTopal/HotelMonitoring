@@ -12,8 +12,18 @@ namespace DataAccessLayer.Concrate
 {
     public class PaymentDal : GenericDal<Payment>, IPaymentDal
     {
+        CpContext _cpContext;
         public PaymentDal(CpContext context) : base(context)
         {
+            _cpContext = context;
+        }
+
+        public IQueryable<Payment> GetAllWithVisitorProperties(Expression<Func<Payment, bool>> filter = null)
+        {
+            var query = _cpContext.Payments.Include(x => x.Visitor.VisitorProperties).AsQueryable();
+            if (filter != null)
+                query = query.Where(filter);
+            return query;
         }
     }
 }

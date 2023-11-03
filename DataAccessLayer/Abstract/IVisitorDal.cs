@@ -1,4 +1,5 @@
-﻿using EntityLayer.Entities;
+﻿using EntityLayer.DTOs;
+using EntityLayer.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,9 @@ namespace DataAccessLayer.Abstract
 {
     public interface IVisitorDal : IGenericDAL<Visitor>
     {
-        IQueryable<Visitor> GetAllVisitorsWithPayment(Expression<Func<Visitor, bool>> filter = null);
+        IQueryable<Visitor> GetAllVisitorsWithPaymentAndProperties(Expression<Func<Visitor, bool>> filter = null);
+        IQueryable<Visitor> GetAllVisitorsWithProperties(Expression<Func<Visitor, bool>> filter = null);
+        Visitor GetOneWithProperties(Expression<Func<Visitor, bool>> filter = null);
+        void GetChangedVisitorProperties(int VisitorId, UpdateVisitorDTO NewVisitor);
     }
 }

@@ -4,13 +4,12 @@
 <div class="d-flex  justify-content-evenly align-items-center">
     <a id="previus" class="bnptn-arrow bnptn-arrow-left" title="previus"></a>
     <div class="d-flex justify-content-center align-items-center">
-        <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">@DateTime.Now.AddMonths(Model.MonthNumber).Year - @DateTime.Now.AddMonths(Model.MonthNumber).ToString("MMMM")</span>
+        <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">@DateTime.Now.AddMonths(Model.MonthNumber).Year <span style="color:darkred;">-</span> @DateTime.Now.AddMonths(Model.MonthNumber).ToString("MMMM")</span>
         <div class="wrappers">
             <div class="containers">
                 <div class="d-flex justify-content-center bg-warning py-3">
                     <img src="~/Images/TurkishLiraCurrency.svg" style="width:50px;" />
                 </div>
-                <i class="fas fa-utensils"></i>
                 <span class="num" data-val="@Model.TurkishLiras">000</span>
                 <span class="text">Türk Lirası</span>
             </div>
@@ -18,7 +17,6 @@
                 <div class="d-flex justify-content-center bg-danger py-3">
                     <img src="~/Images/DollarCurrency.svg" style="width:50px;" />
                 </div>
-                <i class="fas fa-smile-beam"></i>
                 <span class="num" data-val="@Model.Dollar">000</span>
                 <span class="text">Dolar</span>
             </div>
@@ -26,7 +24,6 @@
                 <div class="d-flex justify-content-center bg-primary py-3">
                     <img src="~/Images/EuroCurrency.svg" style="width:50px;" />
                 </div>
-                <i class="fas fa-list"></i>
                 <span class="num" data-val="@Model.Euro">000</span>
                 <span class="text">Euro</span>
             </div>
@@ -41,16 +38,11 @@
         valueDisplays.forEach((valueDisplay) => {
             let startValue = 0;
             let endValue = parseInt(valueDisplay.getAttribute("data-val"));
+            console.log(endValue)
             if (endValue > 0) {
                 let duration = Math.floor(interval / endValue);
                 let counter = setInterval(function () {
-                    if (endValue <= 10000)
-                        startValue += 32;
-                    else if (endValue <= 100000)
-                        startValue += 320;
-                    else
-                        startValue += 3200;
-
+                    startValue += Math.floor((endValue / 54))
                     valueDisplay.textContent = startValue;
                     if (startValue >= endValue) {
                         valueDisplay.textContent = endValue;

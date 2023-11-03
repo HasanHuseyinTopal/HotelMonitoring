@@ -14,18 +14,80 @@
     }
 
     td, th {
-        padding: 0.3rem !important;
         max-width: 40px;
     }
+
+    td {
+        padding: 0.3rem !important;
+    }
+
+    .unFixedTable {
+        background-image: linear-gradient(grey,black,#1c1f23,#1c1f13,#1c1f23,black) !important;
+    }
+
+    .roomShower {
+        background-image: linear-gradient(grey,black,#1c1f23,#1c1f13,#1c1f23,black) !important;
+        color: white !important;
+    }
+
+    #previus:hover {
+        background-color: aliceblue !important;
+    }
+
+    #next:hover {
+        background-color: aliceblue !important;
+    }
+
+    #detailsShower {
+        height: 60px;
+        width: 60px;
+        left: 32px;
+        border: 5px solid darkred;
+        border-radius: 25px;
+        transition: 0.5s;
+    }
+
+        #detailsShower:hover {
+            border: 5px solid aliceblue;
+            color: darkred;
+            transition: 0.5s;
+        }
+
+    .turny {
+        position: absolute;
+        top: 2px;
+        right: -100px;
+        height: 70px;
+        box-shadow: 0 0 4px black, 0 0 8px wheat;
+        width: 70px;
+        border-radius: 30px;
+        padding: 3px;
+        transform: rotate(-5deg);
+        animation: turny 3s linear infinite;
+    }
+
+    @@keyframes turny {
+        0% {
+            transform: rotate(-5deg)
+        }
+
+        50% {
+            transform: rotate(5deg)
+        }
+
+        100% {
+            transform: rotate(-5deg)
+        }
+    }
 </style>
-<div class="d-flex justify-content-center pb-2">
-    <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">< @DateTime.Now.AddMonths(Model.monthNumber).Year - @DateTime.Now.AddMonths(Model.monthNumber).ToString("MMMM") ></span>
-</div>
-<div class=" col-12 d-flex">
-    <button id="previus" class="btn btn-dark mx-4" style="width:80px"></button>
-    <table class="table table-bordered table-hover">
-        <tr>
-            <th>@DateTime.Now.ToString("MMMM")</th>
+
+
+
+
+<div id="topMaster" class="d-flex justify-content-center align-items-center d-none unFixedTable fixed-top text-light" style=" left:121.4px;">
+    <table class="table table-borderless text-light" style="height: 60px; margin:0;">
+        <tr class="roomShower">
+            <th>@DateTime.Now.AddMonths(Model.monthNumber).ToString("MMM")</th>
             <th>101</th>
             <th>102</th>
             <th>103</th>
@@ -50,18 +112,93 @@
             <th>603</th>
             <th>701</th>
             <th>702</th>
-            <th>Doluluk</th>
+            <th>DL</th>
+        </tr>
+    </table>
+</div>
+
+<div style="border-radius:20px;" class="d-flex justify-content-center align-items-center border border-2  border-light shadow-sm align-items-center p-2 m-3">
+    <span class="text-black" style=" font-weight:600; font-size:50px;">@DateTime.Now.AddMonths(Model.monthNumber).Year <span style="color:darkred;">-</span> @DateTime.Now.AddMonths(Model.monthNumber).ToString("MMMM")</span>
+    <div class="text-black" style=" font-weight:600;  font-size:50px; position:absolute; left:123px;">
+        Doluluk (<span style="color:darkred;">%</span>) : <span id="fullState" class="px-3" style="border-radius:10px; background-color:black; border:4px solid aliceblue;">@Model.MonthlyPercent.ToString("0.00")</span>
+        @if (Model.MonthlyPercent >= 40 && Model.MonthlyPercent < 60)
+        {
+            <img class="img-fluid turny" title="BRONZE" src="~/Images/bronze.png" />
+        }
+        else if (Model.MonthlyPercent >= 60 && Model.MonthlyPercent < 80)
+        {
+            <img class="img-fluid turny" title="SİLVER" src="~/Images/silver.png" />
+        }
+        else if (Model.MonthlyPercent >= 80 && Model.MonthlyPercent < 95)
+        {
+            <img class="img-fluid turny" title="GOLD" src="~/Images/gold.png" />
+        }
+        else if (Model.MonthlyPercent >= 95)
+        {
+            <img class="img-fluid turny" title="PLATİNUM" src="~/Images/platinum.png" />
+        }
+    </div>
+    <div id="detailsShower" class="d-flex fw-bolder fs-1 font-monospace position-absolute justify-content-center align-items-center">
+        i
+    </div>
+    <div id="details" class="bg-white position-absolute d-none fw-bolder fs-3 d-flex row align-items-center justify-content-center" style="height:400px;  width:600px; left:134px; top:256px; z-index:2; border:2px solid black; border-bottom-right-radius:25px;">
+        <div>Toplam Oda Sayısı :  <span style="-webkit-text-stroke:1px orange;" class="text-warning">@Model.TotalRoomCount</span></div>
+        <div>Satılan Oda Sayısı : <span style="-webkit-text-stroke:1px orange;" class="text-warning">@ViewBag.TotalSoldRoomsCount</span></div>
+        <div>Kalan Oda Sayısı : <span style="-webkit-text-stroke:1px orange;" class="text-warning">@Model.RestOfRoomsCount</span> </div>
+        <div>Doluluk (%) : <span style="-webkit-text-stroke:1px orange;" class="text-warning">@Model.MonthlyPercent.ToString("0.00")</span> </div>
+        <div>Azami Doluluk (%) : <span style="-webkit-text-stroke:1px orange;" class="text-warning">@Model.MaxMonthlyPercent.ToString("0.00")</span> </div>
+        <div>Satılabilecek Odaların Oranı (%) : <span style="-webkit-text-stroke:1px orange;" class="text-warning">@((Model.MaxMonthlyPercent - Model.MonthlyPercent).ToString("0.00"))</span> </div>
+    </div>
+    <div class="position-absolute d-flex align-items-center" style="right:350px;">
+        <input id="ToDate" type="text" placeholder="2023-05" />
+        <button id="ToButton" class="btn btn-outline-success btn-lg ms-2">Git</button>
+    </div>
+    <div class="d-flex justify-content-center position-absolute" style="right:123px;">
+        <label class="fs-2 fw-semibold mx-3" style="font-weight: 600;" for="showAll">Geçmiş</label>
+        <input type="checkbox" id="showAll" checked="@Model.ShowAll" style="height:50px; width:50px;" />
+    </div>
+</div>
+<div id="fixedTable" class="mt-3 col-12 d-flex">
+    <button id="previus" class="btn btn-outline-dark border border-3 border-dark mx-4" style="width:80px;"></button>
+    <table class="table table-borderless table-hover">
+        <tr class="roomShower coloredShower" style="height:60px;">
+            <th>@DateTime.Now.AddMonths(Model.monthNumber).ToString("MMM")</th>
+            <th>101</th>
+            <th>102</th>
+            <th>103</th>
+            <th>104</th>
+            <th>201</th>
+            <th>202</th>
+            <th>203</th>
+            <th>204</th>
+            <th>301</th>
+            <th>302</th>
+            <th>303</th>
+            <th>304</th>
+            <th>401</th>
+            <th>402</th>
+            <th>403</th>
+            <th>404</th>
+            <th>501</th>
+            <th>502</th>
+            <th>503</th>
+            <th>601</th>
+            <th>602</th>
+            <th>603</th>
+            <th>701</th>
+            <th>702</th>
+            <th>DL</th>
         </tr>
         @for (int i = 1; i < Model.tableValues.GetLength(1); i++)
         {
             <tr>
                 @if (DateTime.Now.Day == i && DateTime.Now.Month == DateTime.Now.AddMonths(Model.monthNumber).Month)
                 {
-                    <td class="text-break" valign="middle" align="center" style="background-image: linear-gradient(#54B435,#82CD47); font-weight: 600; height: 60px;"> @(i)</td>
+                    <td class="text-break" valign="middle" align="center" style="background-image: linear-gradient(black,black); color:lawngreen;  font-size: 16px; font-weight:600; height: 60px;"> @DateTime.Now.AddMonths(Model.monthNumber).ToString("ddd") @(i)</td>
                 }
                 else
                 {
-                    <td class="text-break" style="font-size:12px; font-weight:600;"> @(i)</td>
+                    <td class="text-break" style="font-size:14px; font-weight:600;">@DateTime.Now.AddMonths(Model.monthNumber).AddDays(i - DateTime.Now.Day).ToString("ddd") @(i)</td>
                 }
                 @for (int j = 0; j < Model.tableValues.GetLength(0); j++)
                 {
@@ -69,23 +206,23 @@
                     {
                         if (DateTime.Now.Day == i && DateTime.Now.Month == DateTime.Now.AddMonths(Model.monthNumber).Month)
                         {
-                            <td class="text-break" valign="middle" align="center" style="background-image:linear-gradient(@(Model.tableValues[j,i].CellState ? "#820000,#B70404" : "#54B435,#82CD47")); font-weight:600; color:white; text-shadow:2px 2px 2px black;"><a style="color:white;" href="@(Model.tableValues[j,i].Name == null ? null : "https://localhost:7121/Visitor/SelectedVisitors?visitorId=" + Model.tableValues[j,i].Identity)">@(Model.tableValues[j, i].Name== null ? Model.roomNumbers[j]: Model.tableValues[j,i].Name)</a></td>
+                            <td data-roomNumber="@Model.roomNumbers[j]" class="text-break columns" valign="middle" align="center" style="background-image:linear-gradient(@( Model.tableValues[j,i].DontChange == true ? "black,grey": Model.tableValues[j,i].CellState == 1 ? "#820000,#B70404" : Model.tableValues[j,i].CellState == 3 ? "darkorange,orangered" :"#54B435,#82CD47")); font-weight:600; color:white; text-shadow:0 0 2px black;"><span class="TransferShower" data-transfer="@(Model.tableValues[j,i].TransferDatas!=null ? Model.tableValues[j, i].TransferDatas:"" )" style="color: wheat; display: block; ">@(Model.tableValues[j, i].TransferDatas != null ? "●●●" : "")</span><a style="color:white;" href="@(Model.tableValues[j,i].Name == null ? null : "https://localhost:7121/Visitor/SelectedVisitors?visitorId=" + Model.tableValues[j,i].Identity)"> @(Model.tableValues[j, i].Name== null ? Model.roomNumbers[j]: Model.tableValues[j,i].Name)</a></td>
                         }
                         else
                         {
-                            <td class="text-break" style="background-image: linear-gradient( @(Model.tableValues[j,i].CellState ? "#B70404,#820000" : "white,white") );font-weight: 600;color: white;text-shadow: 2px 2px 2px black;"> <a style="color:white;" href="@(Model.tableValues[j,i].Name == null ? null : "https://localhost:7121/Visitor/SelectedVisitors?visitorId=" + Model.tableValues[j,i].Identity)">@(Model.tableValues[j, i].Name== null ? null: Model.tableValues[j,i].Name)</a></td>
+                            <td data-roomNumber="@Model.roomNumbers[j]" class="text-break columns" valign="middle" align="center" style="background-image: linear-gradient( @(Model.tableValues[j,i].DontChange == true ? "black,grey ":Model.tableValues[j,i].CellState == 1 ? "#B70404,#820000" : Model.tableValues[j,i].CellState == 3 ? "darkorange,orangered": "white,white") );font-weight: 600;color: white;text-shadow: 0 0 2px black;"><span class="TransferShower" data-transfer="@(Model.tableValues[j,i].TransferDatas!=null ? Model.tableValues[j, i].TransferDatas:"" )" style="color:wheat; display:block;">@(Model.tableValues[j,i].TransferDatas !=null ? "●●●" : "")</span> <a  style="color:white;" href="@(Model.tableValues[j,i].Name == null ? null : "https://localhost:7121/Visitor/SelectedVisitors?visitorId=" + Model.tableValues[j,i].Identity)"> @(Model.tableValues[j, i].Name== null ? null: Model.tableValues[j,i].Name)</a></td>
                         }
                     }
                     else if (j == 24)
                     {
 
-                        <td style="font-weight:600;">@(Model.tableValues[24, i].count == 0 ? "" : Model.tableValues[24,i].count)</td>
+                        <td style="font-weight:600; color:@(Model.tableValues[24,i].count>24 ? "red":"black"); background-color:antiquewhite;">@(Model.tableValues[24, i].count == 0 ? "" : Model.tableValues[24,i].count)</td>
                     }
                 }
             </tr>
         }
-        <tr>
-            <th>@DateTime.Now.ToString("MMMM")</th>
+        <tr class="roomShower" style="height:60px;">
+            <th>@DateTime.Now.AddMonths(Model.monthNumber).ToString("MMM")</th>
             <th>101</th>
             <th>102</th>
             <th>103</th>
@@ -110,23 +247,140 @@
             <th>603</th>
             <th>701</th>
             <th>702</th>
-            <th>@ViewBag.totalCount</th>
+            <th>@ViewBag.TotalSoldRoomsCount</th>
         </tr>
     </table>
-    <button style="width:80px" id="next" class="btn btn-dark mx-4"></button>
+    <button style="width:80px;" id="next" class="btn btn-outline-dark border border-3 border-dark mx-4"></button>
 </div>
-<style>
-</style>
+
 @section Scripts{
     <script>
+        var Fullfilled = document.getElementById("fullState");
+        let colorValue=@Model.MonthlyPercent.ToString("0");
+        var color = "rgb(" + (255 -colorValue * 2.55) + "," + colorValue * 2.55 + ",0)";
+
+        Fullfilled.style.color = color;
+
+        $(".TransferShower").on("mouseover", (e) => {
+            $(e.currentTarget).html($(e.currentTarget).attr("data-transfer"));
+        })
+        $(".TransferShower").on("mouseleave", (e) => {
+            $(e.currentTarget).html("●●●");
+        })
+
+        let blockedRooms = fetch("https://localhost:7121/Visitor/BlockedRoom", { method: "GET" }).then(data => data.json()).then(data => {
+            document.querySelectorAll("th").forEach((th) => {
+                if (data.includes($(th).html())) {
+                    $(th).css({ background: 'linear-gradient(yellow,yellow)', color: "black" })
+                }
+            })
+
+            $(".columns").on("click", (e) => {
+                if ($(e.currentTarget)[0].style.backgroundImage == "linear-gradient(rgb(255, 229, 105), rgb(228, 206, 102))") {
+                     let day = e.currentTarget.parentNode.cells[0].innerText.slice(4);
+                    let monthAddedDate = new Date();
+                    let month = monthAddedDate.getMonth() + (@Model.monthNumber) + 1;
+                    let year = monthAddedDate.getFullYear();
+                    let yearAdded = Math.floor((month - 1) / 12);
+                    year = year + yearAdded;
+                    month = month % 12;
+                    month = month == 0 ? 12 : month;
+                    let newDate = (year + "-" + month + "-" + day);
+
+                location.href = `https://localhost:7121/Visitor/AddVisitor?RoomNumber=${$(e.currentTarget).attr("data-roomNumber")}&CheckInDate=${newDate}`
+                }
+
+                if ($(e.currentTarget)[0].style.backgroundImage == "linear-gradient(rgb(84, 180, 53), rgb(130, 205, 71))" || $(e.currentTarget)[0].style.backgroundImage == "linear-gradient(white, white)" ) {
+                    let backgorund = $(e.currentTarget)[0].style.backgroundImage;
+                    $(e.currentTarget).css({ background: 'linear-gradient(#FFE569,#E4CE66)' })
+                    setTimeout(() => {
+                        $(e.currentTarget).css({ background: backgorund })
+                    }, 2000)
+                }
+            })
+
+            $(".columns").on("mouseover", (e) => {
+                let roomNumber = $(e.currentTarget).attr("data-roomNumber");
+                document.querySelectorAll("th").forEach((th) => {
+                    if (data.includes($(th).html())) {
+                        $(th).css({ background: 'linear-gradient(yellow,yellow)', color: "black" })
+                    }
+                    else {
+                        if ($(th).html() == roomNumber) {
+                            $(th).css({ background: 'linear-gradient(white,white)', color: "black" })
+                        }
+                        else {
+                            $(th).css({ background: 'linear-gradient(grey,black,#1c1f23,#1c1f13,#1c1f23,black)', color: "white" })
+                        }
+                    }
+                })
+            })
+            $(".columns").on("mouseleave", (e) => {
+                document.querySelectorAll("th").forEach((th) => {
+                    if (data.includes($(th).html())) {
+                        $(th).css({ background: 'linear-gradient(yellow,yellow)', color: "black" })
+                    }
+                    else {
+                        $(th).css({ background: 'linear-gradient(grey,black,#1c1f23,#1c1f13,#1c1f23,black)', color: "white" })
+                    }
+                })
+            })
+        });
+
+
+        $(document).on("scroll", () => {
+            let yükseklik = document.getElementById("fixedTable").getBoundingClientRect().top;
+
+            if (yükseklik <= -3) {
+                $(".unFixedTable").removeClass("d-none")
+                let widhtUnFixed = $(".roomShower")[1].clientWidth+1.5;
+                $("#topMaster").width(widhtUnFixed);
+            }
+            else {
+                $(".unFixedTable").addClass("d-none")
+            }
+
+        })
+
+        $("#detailsShower").on("mouseover", () => {
+            $("#details").removeClass("d-none");
+        })
+
+        $("#detailsShower").on("mouseleave", () => {
+            $("#details").addClass("d-none");
+        })
+
         let monthNumber = @Model.monthNumber;
         $("#next").on("click", () => {
+            let showAll = $("#showAll").prop("checked");
             monthNumber += 1;
-            window.location.href = "/Visitor/MonthlyView?monthNumber=" + monthNumber;
+            window.location.href = "/Visitor/MonthlyView?monthNumber=" + monthNumber + "&showAll=" + showAll;
         })
         $("#previus").on("click", () => {
+            let showAll = $("#showAll").prop("checked");
             monthNumber -= 1;
-            window.location.href = "/Visitor/MonthlyView?monthNumber=" + monthNumber;
+            window.location.href = "/Visitor/MonthlyView?monthNumber=" + monthNumber + "&showAll=" + showAll;
+        })
+
+        $("#ToButton").on("click", () => {
+            let entereDdate = $("#ToDate").val();
+            let dateNow = new Date();
+            let yearNow = dateNow.getFullYear();
+            let monthNow = dateNow.getMonth() + 1;
+
+            let yearMonth = entereDdate.split("-");
+
+            let monthNumber = Number(((yearMonth[0] - yearNow) * 12)) + (Number(yearMonth[1]) - monthNow);
+
+            if (!isNaN(monthNumber) && Number(yearMonth[1]) <= 12 && Number(yearMonth[1]) >= 1 && Number(yearMonth[0]) >= 1900 && Number(yearMonth[1]) <= 2400) {
+                window.location.href = ("https://localhost:7121/Visitor/MonthlyView?monthNumber=" + monthNumber)
+            }
+        })
+
+        $("#showAll").on("change", (e) => {
+            let monthNumber = @Model.monthNumber;
+            let showAll = e.currentTarget.checked;
+            window.location.href = ("https://localhost:7121/Visitor/MonthlyView?monthNumber=" + monthNumber + "&showAll=" + showAll)
         })
     </script>
 }

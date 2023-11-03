@@ -1,0 +1,150 @@
+﻿@model List<VisitorHistory>
+
+<div class="m-5">
+    <div class="d-flex justify-content-center row">
+        @foreach (var History in Model)
+        {
+            <div class="d-flex justify-content-center row border rounded-3 border-dark m-2 border-5 ">
+                <div>
+                    <div class="d-flex justify-content-center my-3 fs-2">@History.VisitorUpdatedDate!.Value.ToLongDateString()  <span style="color:darkred;"> ... </span>  @History.VisitorUpdatedDate!.Value.ToShortTimeString()</div>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-center align-items-center fs-4 mb-3 mx-3">
+                    @if (History.VisitorCheckInTime != null)
+                    {
+                        <div class="d-flex align-items-center justify-content-start m-2">
+                            <div class="border border-3 border-dark p-2 rounded-3">
+                                <span>@History.VisitorCheckInTime</span>
+                            </div>
+                        </div>
+                    }
+                    @if (History.VisitorCheckOutTime != null)
+                    {
+                        <div class="d-flex align-items-center justify-content-start m-2">
+                            <div class="border border-3 border-dark p-2 rounded-3">
+                                <span>@History.VisitorCheckOutTime</span>
+                            </div>
+                        </div>
+                    }
+                    @if (History.VisitorNamesIsChanged == true)
+                    {
+                        <div class="d-flex align-items-center justify-content-start m-2">
+                            <div class="border border-3 border-dark p-2 rounded-3">
+                                <span>İsim Güncellendi</span>
+                            </div>
+                        </div>
+                    }
+                    @if (History.VisitorOldRoomNumber != null && History.VisitorNewRoomNumber != null)
+                    {
+                        <div class="m-2">
+                            <div class="border border-3 border-dark p-2 rounded-3">
+                                <div>
+                                    <span>Eski Oda Numarası : <span style="color:darkred;">@History.VisitorOldRoomNumber.Value</span></span>
+                                </div>
+                                <hr style="background-color:darkred;" />
+                                <div>
+                                    <span>Yeni Oda Numarası : <span style="color:darkred;">@History.VisitorNewRoomNumber.Value</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (History.VisitorNewStartDate != null && History.VisitorOldStartDate != null)
+                    {
+                        <div class="m-2">
+                            <div class="border border-3 border-dark p-2 rounded-3">
+                                <div>
+                                    <span>Eski Giriş Tarihi : <span style="color:darkred;"> @History.VisitorOldStartDate.Value.ToShortDateString()</span></span>
+                                </div>
+                                <hr style="background-color:darkred;" />
+                                <div>
+                                    <span>Yeni Giriş Tarihi : <span style="color:darkred;"> @History.VisitorNewStartDate.Value.ToShortDateString()</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (History.VisitorNewEndDate != null && History.VisitorOldEndDate != null)
+                    {
+                        <div class="m-2">
+                            <div class="border border-3 border-dark p-2 rounded-3">
+                                <div>
+                                    <span>Eski Çıkış Tarihi : <span style="color:darkred;"> @History.VisitorOldEndDate.Value.ToShortDateString()</span></span>
+                                </div>
+                                <hr style="background-color:darkred;" />
+                                <div>
+                                    <span>Yeni Çıkış Tarihi :  <span style="color:darkred;">@History.VisitorNewEndDate.Value.ToShortDateString()</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (History.VisitorOldRoomPrice != null || History.VisitorNewRoomPrice != null)
+                    {
+                        <div class="m-2">
+                            <div class="border border-3 border-dark p-2 rounded-3">
+                                @if (History.VisitorOldRoomPrice != null)
+                                {
+                                    <div>
+                                        <span>Eski Oda Fiyatı :  <span style="color:darkred;">@History.VisitorOldRoomPrice!.Value.ToString("0.00")  </span></span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>
+                                        <span>Eski Oda Fiyatı :  <span style="color:darkred;">Yok  </span></span>
+                                    </div>
+                                }
+                                <hr style="background-color:darkred;" />
+                                @if (History.VisitorNewRoomPrice != null)
+                                {
+                                    <div>
+                                        <span>Yeni Oda Fiyatı :  <span style="color:darkred;">@History.VisitorNewRoomPrice!.Value.ToString("0.00") </span></span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>
+                                        <span>Yeni Oda Fiyatı :  <span style="color:darkred;">Yok  </span></span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @if (History.VisitorOldCurrency != null || History.VisitorNewCurrency != null)
+                    {
+                        <div class="m-2">
+                            <div class="border border-3 border-dark p-2 rounded-3">
+                                @if (History.VisitorOldCurrency != null)
+                                {
+                                    <div>
+                                        <span>Eski Para Birimi :  <span style="color:darkred;">@History.VisitorOldCurrency!.Value  </span></span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>
+                                        <span>Eski Para Birimi :  <span style="color:darkred;">Yok  </span></span>
+                                    </div>
+                                }
+                                <hr style="background-color:darkred;" />
+                                @if (History.VisitorNewCurrency != null)
+                                {
+                                    <div>
+                                        <span>Yeni Para Birimi :  <span style="color:darkred;">@History.VisitorNewCurrency!.Value </span></span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>
+                                        <span>Yeni Para Birimi :  <span style="color:darkred;">Yok  </span></span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+    <a class="position-absolute btn btn-lg btn-danger" style="left:80px; top:110px;" href="@ViewBag.backUrl">Geri</a>
+</div>

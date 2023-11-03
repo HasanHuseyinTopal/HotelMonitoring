@@ -33,6 +33,7 @@ namespace DataAccessLayer.Concrate
 
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> filter = null)
         {
+            
             return filter == null ? _context.Set<TEntity>().AsQueryable() : _context.Set<TEntity>().Where(filter).AsQueryable();
         }
 
