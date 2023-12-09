@@ -1,0 +1,82 @@
+﻿
+
+<style>
+    .ManagemantBoxSections{
+        margin:20px;
+        margin-right:80px;
+        border:3px solid black;
+        border-radius:10px;
+        box-shadow:0 0 3px silver, 0 0 6px black;
+    }
+    .ManagemantBox{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        height:60px;
+        width:160px;
+        background-color:wheat;
+        border-radius:5px;
+        box-shadow:2px 2px 4px black;
+        font-size:large;
+        font-weight:bolder;
+        margin:20px;
+    }
+    .ManagemantBox a{
+        text-align:center;
+        color:black;
+        transition:0.2s;
+    }
+        .ManagemantBox a:hover {
+            text-align: center;
+            color: white;
+            transition: 0.2s;
+        }
+</style>
+
+<div class="d-flex justify-content-evenly align-items-center my-2">
+    <div style="border-radius:20px;" class="shadow-sm px-5">
+        <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">Yönetim Paneli</span>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center m-5">
+    <i class=" fa-thin fa-gear fa-fade fa" style="color:darkred;"></i>
+    <div class="ManagemantBoxSections bg-warning">
+        <div class="ManagemantBox">
+            <a asp-action="ShowAllAgencies" asp-controller="Administration">Acenta Listesi</a>
+        </div>
+        <div class="ManagemantBox">
+            <a asp-action="HotelStatisticsPage" asp-controller="Visitor">İstatistikler</a>
+        </div>
+    </div>
+    <i class="fa-solid fa-fade fa-money-bill-1-wave" style="color:darkgreen"></i>
+    <div class="ManagemantBoxSections bg-primary">
+        <div class="ManagemantBox">
+            <a asp-controller="Visitor" asp-action="MonthlyIncome">Aylık Gelir</a>
+        </div>
+        <div class="ManagemantBox">
+            <a asp-controller="Financial" asp-action="DailyResult">Günlük Gelir</a>
+        </div>
+        <div class="ManagemantBox">
+            <a asp-controller="Financial" asp-action="DailyFinancialInOutCome">Giderler</a>
+        </div>
+    </div>
+    <i class="fa-solid fa-person fa-fade" style="color:orange"></i>
+    <div class="ManagemantBoxSections bg-danger">
+        <div class="ManagemantBox">
+            <a asp-controller="Visitor" asp-action="AllVisitors">Ziyaretçiler</a>
+        </div>
+        <div class="ManagemantBox">
+            <a asp-controller="Visitor" asp-action="GuestDates">Son Eklenenler</a>
+        </div>
+        <div class="ManagemantBox">
+            <a asp-controller="Visitor" asp-action="UnpaidVisitors">Ödenmeyenler</a>
+        </div>
+    </div>
+    <i class="fa-solid fa-gamepad fa-fade" style="color:blue"></i>
+    <div class="ManagemantBoxSections bg-success">
+        <div class="ManagemantBox">
+            <a asp-controller="Visitor" asp-action="MemoryGame">Hafıza Oyunu</a>
+        </div>
+    </div>
+</div>

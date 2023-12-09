@@ -1,5 +1,6 @@
 ﻿using EntityLayer.DTOs;
 using EntityLayer.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -23,6 +24,7 @@ namespace Capitol.Controllers
             _roleManager = roleManager;
 
         }
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Login(string? ReturnUrl)
         {
@@ -32,15 +34,15 @@ namespace Capitol.Controllers
             }
             if (_userManager.Users.Count() < 1)
             {
-                string userName = _configuration["FirstUser:UserName"]!;
-                string password = _configuration["FirstUser:Password"]!;
+                string userName = _configuration["FirstUser:UserName"];
+                string password = _configuration["FirstUser:Password"];
                 var user = new IdentityUser()
                 {
                     UserName = userName,
                 };
                 var result = await _userManager.CreateAsync(user, password);
                 var startingRole = await _roleManager.RoleExistsAsync("ADMN");
-                IdentityRole role = null!;
+                IdentityRole role=null;
                 if (!startingRole)
                 {
                     role = new IdentityRole()
@@ -51,7 +53,7 @@ namespace Capitol.Controllers
                 }
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, role?.Name!);
+                    await _userManager.AddToRoleAsync(user, role.Name);
                     return View();
                 }
             }

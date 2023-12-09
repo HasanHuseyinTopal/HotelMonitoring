@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -31,8 +32,8 @@ namespace Capitol.Controllers
             ViewBag.CheckInDate = CheckInDate;
             if (VisitorId == 0)
             {
-                ViewBag.previusUrl = HttpContext.Request.Headers["Referer"];
-                string isFromRoom = HttpContext.Request.Headers["Referer"];
+                string isFromRoom = HttpContext.Request.Headers["Referer"]!;
+                ViewBag.previusUrl = isFromRoom;
 
                 if (isFromRoom.Contains("roomNumber"))
                 {
@@ -54,7 +55,7 @@ namespace Capitol.Controllers
                 shiftedVisiter.VisitorRoomPrice = visitor.VisitorRoomPrice;
                 shiftedVisiter.VisitorPhoneNumber = visitor.VisitorPhoneNumber;
                 shiftedVisiter.VisitorCount = visitor.VisitorCount;
-                shiftedVisiter.VisitorRezervation = visitor.VisitorRezervation;
+                shiftedVisiter.VisitorAgencyId = visitor.VisitorAgencyId;
                 shiftedVisiter.VisitorDescription = visitor.VisitorDescription?.ToUpper();
                 shiftedVisiter.VisitorStartDate = visitor.VisitorEndDate.Date;
                 shiftedVisiter.VisitorEndDate = visitor.VisitorEndDate.AddDays(1).Date;
@@ -66,12 +67,14 @@ namespace Capitol.Controllers
         [HttpPost]
         public IActionResult AddVisitor(AddVisitorDTO addVisitorDTO, bool DoPayment, bool DontChangeRoom, string? previusUrl, List<string> names, List<string> surnames, IFormFile? File)
         {
-            Visitor visitor = null;
+            Visitor visitor = null!;
             if (ModelState.IsValid)
             {
-                if (File != null)
+                List<string> AcceptableFormats = new() { ".jpg", ".jpeg", ".png" };
+
+                if (File != null && AcceptableFormats.Contains(Path.GetExtension(File.FileName)))
                 {
-                    addVisitorDTO.VisitorFileUrl = FileChangeProcess(File, addVisitorDTO.VisitorFileUrl);
+                    addVisitorDTO.VisitorFileUrl = FileChangeProcess(File, addVisitorDTO.VisitorFileUrl!);
                 }
 
                 string pattern = "\\s+";
@@ -128,9 +131,18 @@ namespace Capitol.Controllers
                     _unitOfWork.Save();
                     if (visitor.VisitorPreviusId != null)
                     {
-                        var nextVisitor = _unitOfWork.visitorDal.GetOne(x => x.VisitorId == visitor.VisitorPreviusId);
-                        nextVisitor.VisitorNextId = visitor.VisitorId;
-                        _unitOfWork.visitorDal.Update(nextVisitor);
+                        var previusVisitor = _unitOfWork.visitorDal.GetOne(x => x.VisitorId == visitor.VisitorPreviusId);
+                        if (previusVisitor.VisitorEndDate.Date > visitor.VisitorStartDate.Date)
+                        {
+                            var history = new VisitorHistory();
+                            history.VisitorId = previusVisitor.VisitorId;
+                            history.VisitorOldEndDate = previusVisitor.VisitorEndDate;
+                            history.VisitorNewEndDate = visitor.VisitorStartDate;
+                            history.VisitorUpdatedDate = DateTime.Now;
+                            _unitOfWork.visitorHistoryDal.Add(history);
+                        }
+                        previusVisitor.VisitorEndDate = previusVisitor.VisitorEndDate.Date > visitor.VisitorStartDate.Date ? visitor.VisitorStartDate : previusVisitor.VisitorEndDate;
+                        _unitOfWork.visitorDal.Update(previusVisitor);
                     }
                     _unitOfWork.Save();
                     return RedirectToAction(nameof(AddPaymentToVisitor), new { VisitorId = visitor.VisitorId });
@@ -147,9 +159,20 @@ namespace Capitol.Controllers
             }
             if (visitor.VisitorPreviusId != null)
             {
-                var nextVisitor = _unitOfWork.visitorDal.GetOne(x => x.VisitorId == visitor.VisitorPreviusId);
-                nextVisitor.VisitorNextId = visitor.VisitorId;
-                _unitOfWork.visitorDal.Update(nextVisitor);
+
+                var previusVisitor = _unitOfWork.visitorDal.GetOne(x => x.VisitorId == visitor.VisitorPreviusId);
+                previusVisitor.VisitorNextId = visitor.VisitorId;
+                if (previusVisitor.VisitorEndDate.Date > visitor.VisitorStartDate.Date)
+                {
+                    var history = new VisitorHistory();
+                    history.VisitorId = previusVisitor.VisitorId;
+                    history.VisitorOldEndDate = previusVisitor.VisitorEndDate;
+                    history.VisitorNewEndDate = visitor.VisitorStartDate;
+                    history.VisitorUpdatedDate = DateTime.Now;
+                    _unitOfWork.visitorHistoryDal.Add(history);
+                }
+                previusVisitor.VisitorEndDate = previusVisitor.VisitorEndDate.Date > visitor.VisitorStartDate.Date ? visitor.VisitorStartDate : previusVisitor.VisitorEndDate;
+                _unitOfWork.visitorDal.Update(previusVisitor);
                 _unitOfWork.Save();
             }
             return RedirectToAction(nameof(SelectedVisitors), new { visitorId = visitor.VisitorId });
@@ -200,7 +223,7 @@ namespace Capitol.Controllers
         [HttpGet]
         public IActionResult RemoveVisitorName([FromQuery] int VisitorPropertyId)
         {
-            string previusUrl = HttpContext.Request.Headers["Referer"];
+            string previusUrl = HttpContext.Request.Headers["Referer"]!;
             var name = _unitOfWork.visitorPropertyDal.GetOneWithVisitor(x => x.VisitorPropertiyId == VisitorPropertyId);
             name.Visitor.VisitorCount = _unitOfWork.visitorPropertyDal.GetAll(x => x.VisitorId == name.VisitorId).Count() - 1;
 
@@ -267,7 +290,9 @@ namespace Capitol.Controllers
         public IActionResult DeleteVisitor(int id)
         {
             string? previusUrl = HttpContext.Request.Headers["Referer"];
-            var deleteVisitor = _unitOfWork.visitorDal.GetOne(x => x.VisitorId == id);
+            var deleteVisitor = _unitOfWork.visitorDal.GetOneWithPropertiesAndHistories(x => x.VisitorId == id);
+            var history = _unitOfWork.visitorDal.GetAll(x => x.VisitorId == id);
+            deleteVisitor.Agency = null;
             if (deleteVisitor.VisitorFileUrl != null)
             {
                 FileDeleteProcess(deleteVisitor.VisitorFileUrl, _webHostEnvironment.WebRootPath);
@@ -315,6 +340,7 @@ namespace Capitol.Controllers
             if (visitor != null)
             {
                 var updateVisitorDto = _mapper.Map<UpdateVisitorDTO>(visitor);
+                updateVisitorDto.VisitorAgencyId = updateVisitorDto.VisitorAgencyId ?? 0;
                 return View(updateVisitorDto);
             }
             else
@@ -332,8 +358,10 @@ namespace Capitol.Controllers
                 string pattern = "\\s+";
                 var visitor = _unitOfWork.visitorDal.GetOneWithProperties(x => x.VisitorId == updateVisitorDTO.VisitorId);
 
-                if (File != null)
-                    updateVisitorDTO.VisitorFileUrl = FileChangeProcess(File, updateVisitorDTO.VisitorFileUrl);
+                List<string> AcceptableFormats = new() { ".jpg", ".jpeg", ".png" };
+
+                if (File != null && AcceptableFormats.Contains(Path.GetExtension(File.FileName)))
+                    updateVisitorDTO.VisitorFileUrl = FileChangeProcess(File, updateVisitorDTO.VisitorFileUrl!);
                 else
                     updateVisitorDTO.VisitorFileUrl = updateVisitorDTO.VisitorFileUrl;
 
@@ -432,13 +460,16 @@ namespace Capitol.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MonthlyView(int monthNumber, bool showAll, CancellationToken cancellationToken)
+        public async Task<IActionResult> MonthlyView(int monthNumber, bool showAll)
         {
             ViewBag.TotalSoldRoomsCount = 0;
-            var visitors = await _unitOfWork.visitorDal.GetAllVisitorsWithProperties(x => x.VisitorStartDate.Date >= DateTime.Now.AddMonths(monthNumber - 2).Date && x.VisitorEndDate.Date <= DateTime.Now.AddMonths(monthNumber + 2).Date).ToListAsync();
+            var visitors = await _unitOfWork.visitorDal.GetAllVisitorsWithProperties(x => x.VisitorStartDate.Date >= DateTime.Now.AddMonths(monthNumber - 2).Date && x.VisitorEndDate.Date <= DateTime.Now.AddMonths(monthNumber + 2).Date).OrderByDescending(x => x.VisitorState).ToListAsync();
             var monthlyVisitorDTO = new MonthlyVisitorDTO();
 
-            monthlyVisitorDTO.tableValues = new (int CellState, string Name, int Identity, int count, bool? DontChange, string? TransferDatas)[25, DaysInMounth(monthNumber) + 1];
+            monthlyVisitorDTO.roomNumbers = _unitOfWork.roomDal.GetAll().Select(x => x.RoomNumber).ToArray();
+
+
+            monthlyVisitorDTO.tableValues = new (int CellState, string Name, int Identity, int count, bool? DontChange, string? TransferDatas, string? crashedDate)[25, DaysInMounth(monthNumber) + 1];
             monthlyVisitorDTO.monthNumber = monthNumber;
 
             int balancer = DateTime.Now.AddMonths(monthNumber).Month == 3 ? 3 : 1;
@@ -457,6 +488,10 @@ namespace Capitol.Controllers
                             monthlyVisitorDTO.tableValues[24, visitor.VisitorStartDate.Day + i].count += 1;
                             ViewBag.TotalSoldRoomsCount += 1;
 
+                            if (i == 0)
+                            {
+                                States.crashedDate = visitor.VisitorStartDate.ToShortDateString();
+                            }
 
                             if (States.CellState != 0)
                                 States.CellState = 3;
@@ -535,6 +570,56 @@ namespace Capitol.Controllers
             return View(monthlyVisitorDTO);
         }
 
+        [HttpGet]
+        public IActionResult HotelStatisticsPage()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> HotelStatistics(int monthNumber)
+        {
+
+            var visitors = await _unitOfWork.visitorDal.GetAllVisitorsWithProperties(x => x.VisitorStartDate.Date >= DateTime.Now.AddMonths(monthNumber - 2).Date && x.VisitorEndDate.Date <= DateTime.Now.AddMonths(monthNumber + 2).Date).ToListAsync();
+            HotelStatisticsDTO hotelStatisticsDTO = new();
+
+            var AgencyNames = await _unitOfWork.agencyDal.GetAll().Select(x => x.AgencyName).ToListAsync();
+            foreach (var AgencyName in AgencyNames)
+            {
+                hotelStatisticsDTO.RezervationCounts.Add(AgencyName, 0);
+            }
+            hotelStatisticsDTO.RezervationCounts.Add("Belirsiz", 0);
+
+            int balancer = DateTime.Now.AddMonths(monthNumber).Month == 3 ? 3 : 1;
+
+            foreach (var visitor in visitors)
+            {
+
+                for (int i = 0; i < (visitor.VisitorEndDate - visitor.VisitorStartDate).TotalDays; i++)
+                {
+                    if (visitor.VisitorStartDate.Day + i <= DaysInMounth(monthNumber) &&
+                        DateTime.Now.AddMonths(monthNumber).Month == visitor.VisitorStartDate.AddDays(i - (i > 0 ? balancer - i > 0 ? i : balancer : i)).Month)
+                    {
+                        if (visitor.Agency != null)
+                            hotelStatisticsDTO.RezervationCounts[visitor.Agency.AgencyName] += 1;
+                        else
+                            hotelStatisticsDTO.RezervationCounts["Belirsiz"] += 1;
+                    }
+                    else if (visitor.VisitorStartDate.Day + i + (balancer == 3 ? 1 : 0) >= DaysInMounth(monthNumber + 1) &&
+                        DateTime.Now.AddMonths(monthNumber).Month == visitor.VisitorStartDate.AddDays(i).Month)
+                    {
+                        if (visitor.Agency != null)
+                            hotelStatisticsDTO.RezervationCounts[visitor.Agency.AgencyName] += 1;
+                        else
+                            hotelStatisticsDTO.RezervationCounts["Belirsiz"] += 1;
+                    }
+                }
+
+            }
+            return Ok(JsonSerializer.Serialize(new { rezervationCounts = hotelStatisticsDTO.RezervationCounts }));
+        }
+
+        [HttpGet]
         public async Task<IActionResult> AvailabilityCheck(int monthNumber)
         {
             var visitors = await _unitOfWork.visitorDal.GetAll(x => x.VisitorStartDate.Date >= DateTime.Now.AddMonths(monthNumber - 2).Date && x.VisitorStartDate.Date <= DateTime.Now.AddMonths(monthNumber + 2).Date).ToListAsync();
@@ -647,13 +732,18 @@ namespace Capitol.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> DailyVisitors(CancellationToken cancellationToken)
+        public async Task<IActionResult> DailyVisitors()
         {
             var visitors = await _unitOfWork.visitorDal.
                 GetAllVisitorsWithPaymentAndProperties(x => x.VisitorEndDate.Date >= DateTime.Now.Date && x.VisitorStartDate.Date <= DateTime.Now.Date && x.VisitorState != 5).ToListAsync();
             var roomState = _unitOfWork.roomDal.GetAll();
             DailyVisitorDTOs dailyVisitorDTOs = new();
-
+            dailyVisitorDTOs.roomNumbers = _unitOfWork.roomDal.GetAll().Select(x => x.RoomNumber).ToArray();
+            foreach (var roomNumber in dailyVisitorDTOs.roomNumbers)
+            {
+                dailyVisitorDTOs.paymentStates.Add(roomNumber, true);
+                dailyVisitorDTOs.roomStates.Add(roomNumber, "");
+            }
 
             foreach (var visitor in visitors)
             {
@@ -661,17 +751,17 @@ namespace Capitol.Controllers
                 customVisitor.VisitorRoomNumber = visitor.VisitorRoomNumber;
                 customVisitor.VisitorStartDate = visitor.VisitorStartDate;
                 customVisitor.VisitorEndDate = visitor.VisitorEndDate;
-                customVisitor.VisitorState = visitor.VisitorState == 2 && visitor.VisitorEndDate.Date != DateTime.Now.Date ? "green" : DateTime.Now.Date >= visitor.VisitorStartDate.Date && DateTime.Now < visitor.VisitorStartDate.Date.AddDays(1).AddHours(12) && visitor.VisitorState != 2 ? "blue" : visitor.VisitorEndDate.Date == DateTime.Now.Date ? "red" : "green";
+                customVisitor.VisitorState = visitor.VisitorState == 2 && visitor.VisitorEndDate.Date != DateTime.Now.Date ? "green" : DateTime.Now.Date >= visitor.VisitorStartDate.Date && DateTime.Now.Date <= visitor.VisitorEndDate.Date && visitor.VisitorState != 2 ? "blue" : visitor.VisitorEndDate.Date >= DateTime.Now.Date && visitor.VisitorState == 2 ? "red" : "green";
                 customVisitor.IsPaymentDone = visitor.VisitorPaymentIsDone;
                 customVisitor.VisitorPreviusRoomId = visitor.VisitorPreviusId;
                 customVisitor.VisitorNextRoomId = visitor.VisitorNextId;
                 if (customVisitor.VisitorState == "blue")
                 {
-                    dailyVisitorDTOs.CheckInCount += visitor.VisitorCount.Value;
+                    dailyVisitorDTOs.CheckInCount += visitor.VisitorCount!.Value;
                 }
                 else if (customVisitor.VisitorState == "green" || customVisitor.VisitorState == "red")
                 {
-                    dailyVisitorDTOs.StayInCount += visitor.VisitorCount.Value;
+                    dailyVisitorDTOs.StayInCount += visitor.VisitorCount!.Value;
                     foreach (var props in visitor.VisitorProperties)
                     {
                         if (!props.VisitorActive)
@@ -680,9 +770,9 @@ namespace Capitol.Controllers
                         }
                     }
                 }
-                if (customVisitor.VisitorState == "red")
+                if (customVisitor.VisitorEndDate.Date == DateTime.Now.Date)
                 {
-                    dailyVisitorDTOs.CheckOutCount += visitor.VisitorCount.Value;
+                    dailyVisitorDTOs.CheckOutCount += visitor.VisitorCount!.Value;
                     foreach (var props in visitor.VisitorProperties)
                     {
                         if (!props.VisitorActive)
@@ -693,11 +783,11 @@ namespace Capitol.Controllers
                 }
                 dailyVisitorDTOs.listOfVisitors.Add(customVisitor);
             }
-            dailyVisitorDTOs.listOfVisitors.Sort((c1, c2) => c1.VisitorState.CompareTo(c2.VisitorState));
+            dailyVisitorDTOs.listOfVisitors.Sort((c1, c2) => c1.VisitorState!.CompareTo(c2.VisitorState));
             dailyVisitorDTOs.CheckInRoomCount = dailyVisitorDTOs.listOfVisitors.Count(x => x.VisitorState == "blue");
             dailyVisitorDTOs.StayInRoomCount = dailyVisitorDTOs.listOfVisitors.Count(x => x.VisitorState == "green") + dailyVisitorDTOs.listOfVisitors.Count(x => x.VisitorState == "red");
 
-            dailyVisitorDTOs.CheckOutRoomCount = dailyVisitorDTOs.listOfVisitors.Count(x => x.VisitorState == "red");
+            dailyVisitorDTOs.CheckOutRoomCount = dailyVisitorDTOs.listOfVisitors.Count(x => x.VisitorEndDate.Date == DateTime.Now.Date);
 
             foreach (var dailyVisitorDTO in dailyVisitorDTOs.roomNumbers)
             {
@@ -707,7 +797,7 @@ namespace Capitol.Controllers
 
             foreach (var dailyVisitorDTO in dailyVisitorDTOs.listOfVisitors)
             {
-                if (!dailyVisitorDTOs.roomStates[dailyVisitorDTO.VisitorRoomNumber].Contains(dailyVisitorDTO.VisitorState))
+                if (!dailyVisitorDTOs.roomStates[dailyVisitorDTO.VisitorRoomNumber].Contains(dailyVisitorDTO.VisitorState!))
                 {
                     dailyVisitorDTOs.roomStates[dailyVisitorDTO.VisitorRoomNumber] += dailyVisitorDTO.VisitorState;
                 }
@@ -751,8 +841,6 @@ namespace Capitol.Controllers
             return View(dailyVisitorDTOs);
         }
 
-
-
         [HttpGet]
         public IActionResult AllVisitors()
         {
@@ -762,11 +850,11 @@ namespace Capitol.Controllers
             {
                 foreach (var names in visitor.VisitorProperties)
                 {
-
                     var customVisitor = _mapper.Map<AllVisitorDTO>(visitor);
+                    customVisitor.VisitorRezervation = visitor.Agency?.AgencyName;
                     customVisitor.VisitorName = names.VisitorName;
                     customVisitor.VisitorSurName = names.VisitorSurName;
-                    customVisitor.VisitorState = visitor.VisitorState == 2 && visitor.VisitorEndDate.Date != DateTime.Now.Date && visitor.VisitorStartDate.Date <= DateTime.Now.Date ? 2 : DateTime.Now.Date >= visitor.VisitorStartDate.Date && DateTime.Now < visitor.VisitorStartDate.Date.AddDays(1).AddHours(12) && visitor.VisitorState != 2 ? 1 : visitor.VisitorEndDate.Date == DateTime.Now.Date ? 0 : visitor.VisitorStartDate.Date < DateTime.Now.Date && visitor.VisitorEndDate.Date > DateTime.Now.Date ? 2 : visitor.VisitorStartDate.Date > DateTime.Now.Date ? 3 : 5;
+                    customVisitor.VisitorState = visitor.VisitorState == 2 && visitor.VisitorEndDate.Date != DateTime.Now.Date && visitor.VisitorStartDate.Date <= DateTime.Now.Date ? 2 : DateTime.Now.Date >= visitor.VisitorStartDate.Date && DateTime.Now.Date <= visitor.VisitorEndDate.Date && visitor.VisitorState != 2 && visitor.VisitorState != 5 ? 1 : visitor.VisitorEndDate.Date == DateTime.Now.Date && visitor.VisitorState == 2 ? 5 : visitor.VisitorStartDate.Date > DateTime.Now.Date ? 3 : 5;
                     getAllCustomVisitorDTOs.Add(customVisitor);
                 }
 
@@ -774,6 +862,27 @@ namespace Capitol.Controllers
 
             return View(getAllCustomVisitorDTOs.OrderBy(x => x.VisitorStartDate).ThenBy(x => x.VisitorRoomNumber).ToList());
         }
+
+        [HttpGet]
+        public IActionResult CrashedVisitors(int RoomNumber, string StartDate)
+        {
+            var date = Convert.ToDateTime(StartDate);
+            var visitors = _unitOfWork.visitorDal.GetAllVisitorsWithProperties(x => x.VisitorRoomNumber == RoomNumber && x.VisitorStartDate == date);
+
+            if (visitors.Count() <= 1)
+                return RedirectToAction(nameof(SelectedVisitors), new { VisitorId = visitors.FirstOrDefault().VisitorId });
+            var CrashedVisitors = new List<CrashedVisitorsDTO>();
+            foreach (var visitor in visitors)
+            {
+                var CrashedVisitor = new CrashedVisitorsDTO();
+                CrashedVisitor.VisitorName = visitor.VisitorProperties[0].VisitorName;
+                CrashedVisitor.VisitorSurname = visitor.VisitorProperties[0].VisitorSurName;
+                CrashedVisitor.VisitorId = visitor.VisitorId;
+                CrashedVisitors.Add(CrashedVisitor);
+            }
+            return View(CrashedVisitors);
+        }
+
         [HttpGet]
         public IActionResult BlockedRoom()
         {
@@ -827,13 +936,13 @@ namespace Capitol.Controllers
         [HttpGet]
         public IActionResult CheckOutVisitor(int id)
         {
-            string previusUrl = HttpContext.Request.Headers["Referer"];
+            string previusUrl = HttpContext.Request.Headers["Referer"]!;
             var visitor = _unitOfWork.visitorDal.GetOne(x => x.VisitorId == id);
 
 
             if (visitor.VisitorState != 5)
             {
-                if (visitor.VisitorEndDate.Date <= DateTime.Now.Date.AddDays(1))
+                if (visitor.VisitorStartDate.Date <= DateTime.Now.Date)
                 {
                     var checkoutRoom = _unitOfWork.roomDal.GetOne(room => room.RoomNumber == visitor.VisitorRoomNumber);
                     checkoutRoom.RoomIsClean = false;
@@ -868,9 +977,9 @@ namespace Capitol.Controllers
         [HttpGet]
         public IActionResult CheckInVisitor(int id)
         {
-            string previusUrl = HttpContext.Request.Headers["Referer"];
+            string previusUrl = HttpContext.Request.Headers["Referer"]!;
             var visitor = _unitOfWork.visitorDal.GetOne(x => x.VisitorId == id);
-            if (DateTime.Now >= visitor.VisitorStartDate.Date.AddHours(0) && DateTime.Now < visitor.VisitorStartDate.Date.AddDays(1).AddHours(12))
+            if (DateTime.Now >= visitor.VisitorStartDate.Date && DateTime.Now <= visitor.VisitorEndDate.Date.AddHours(12) && (visitor.VisitorState != 2 || visitor.VisitorState != 5))
             {
                 visitor.VisitorState = 2;
 
@@ -898,29 +1007,46 @@ namespace Capitol.Controllers
         [HttpGet]
         public IActionResult SelectedVisitors(int roomNumber, int visitorId)
         {
+
+
             ViewBag.RoomNumber = roomNumber;
-            ViewBag.ListOfRooms = new int[] { 101, 102, 103, 104, 201, 202, 203, 204, 301, 302, 303, 304, 401, 402, 403, 404, 501, 502, 503, 601, 602, 603, 701, 702 };
+            var rooms = _unitOfWork.roomDal.GetAll().Select(x => x.RoomNumber).ToList();
+            int[] listOfRooms = new int[rooms.Count()];
+            for (int i = 0; i < rooms.Count(); i++)
+            {
+                listOfRooms[i] = rooms[i];
+            }
+
+
+            ViewBag.ListOfRooms = listOfRooms;
             ViewBag.VisitorId = visitorId;
             string path = HttpContext.Request.Path;
-            string query = HttpContext.Request.QueryString.Value;
+            string query = HttpContext.Request.QueryString.Value!;
             ViewBag.currentUrl = path + query;
             var visitors = new List<Visitor>().AsQueryable();
             if (visitorId >= 1)
             {
                 visitors = _unitOfWork.visitorDal.GetAllVisitorsWithPaymentAndProperties(x => x.VisitorId == visitorId);
             }
-            else if (roomNumber >= 99)
+            else if (listOfRooms.Contains(roomNumber))
             {
                 visitors = _unitOfWork.visitorDal.
               GetAllVisitorsWithPaymentAndProperties(x => x.VisitorEndDate.Date >= DateTime.Now.Date && x.VisitorState != 5 && x.VisitorStartDate.Date <= DateTime.Now.Date && x.VisitorRoomNumber == roomNumber);
             }
+            else
+            {
+                throw new Exception("Böyle bir oda yok");
+            }
+
             List<VisitorDetailsDTO> visitorDetailsDTOs = new();
             foreach (var visitor in visitors)
             {
 
-                var visitorDetailsDTO = _mapper.Map<VisitorDetailsDTO>(visitor);
 
-                visitorDetailsDTO.VisitorState = visitor.VisitorState == 2 && visitor.VisitorEndDate.Date != DateTime.Now.Date && visitor.VisitorStartDate.Date <= DateTime.Now.Date ? 2 : DateTime.Now.Date >= visitor.VisitorStartDate.Date && DateTime.Now < visitor.VisitorStartDate.Date.AddDays(1).AddHours(12) && visitor.VisitorState != 2 ? 1 : visitor.VisitorEndDate.Date == DateTime.Now.Date ? 0 : visitor.VisitorStartDate.Date < DateTime.Now.Date && visitor.VisitorEndDate.Date > DateTime.Now.Date ? 2 : visitor.VisitorStartDate.Date > DateTime.Now.Date ? 3 : 5;
+                var visitorDetailsDTO = _mapper.Map<VisitorDetailsDTO>(visitor);
+                visitorDetailsDTO.VisitorAgencyName = visitor.Agency?.AgencyName;
+
+                visitorDetailsDTO.VisitorState = visitor.VisitorState == 2 && visitor.VisitorEndDate.Date != DateTime.Now.Date && visitor.VisitorStartDate.Date <= DateTime.Now.Date ? 2 : DateTime.Now.Date >= visitor.VisitorStartDate.Date && DateTime.Now.Date <= visitor.VisitorEndDate.Date && visitor.VisitorState != 2 && visitor.VisitorState != 5 ? 1 : visitor.VisitorEndDate.Date == DateTime.Now.Date && visitor.VisitorState == 2 ? 5 : visitor.VisitorStartDate.Date > DateTime.Now.Date ? 3 : 5;
 
                 if (visitor.VisitorPreviusId != 0)
                 {
@@ -1016,10 +1142,10 @@ namespace Capitol.Controllers
         }
         [Authorize(Policy = "ADMN")]
         [HttpGet]
-        public IActionResult GuestDates()
+        public async Task<IActionResult> GuestDates()
         {
-            var latestVisitors = _unitOfWork.visitorDal.GetAllVisitorsWithProperties(null).OrderByDescending(x => x.VisitorAddedDate).Take(40);
-            return View(latestVisitors.ToList());
+            var latestVisitors = await _unitOfWork.visitorDal.GetAllVisitorsWithProperties().OrderByDescending(x => x.VisitorAddedDate).Take(80).ToListAsync();
+            return View(latestVisitors);
         }
         [HttpGet]
         public IActionResult VisitorSearch()
@@ -1029,7 +1155,7 @@ namespace Capitol.Controllers
         [HttpPost]
         public IActionResult VisitorSearch([FromBody] VisitorSearchOptions visitorSearchOptions)
         {
-            var visitors = _unitOfWork.visitorPropertyDal.GetAllPropertiesWithVisitors(x => x.VisitorName.Contains(visitorSearchOptions.VisitorName) && x.VisitorSurName.Contains(visitorSearchOptions.VisitorSurName));
+            var visitors = _unitOfWork.visitorPropertyDal.GetAllPropertiesWithVisitors(x => x.VisitorName.Contains(visitorSearchOptions.VisitorName!) && x.VisitorSurName!.Contains(visitorSearchOptions.VisitorSurName!)).AsQueryable();
 
             int RoomCheckOutCount = 0;
 
@@ -1047,15 +1173,18 @@ namespace Capitol.Controllers
                     RoomCheckOutCount = visitors.Select(x => x.Visitor.VisitorRoomNumber).Distinct().Count();
                 }
             }
+
             List<int> rooms = new List<int>();
-            List<VisitorSearchDTO> VisitorSearchDTOs = new();
+            VisitorSearchDTOs VisitorSearchDTOs = new();
+            VisitorSearchDTOs.TotalPageCount = visitors.Count();
+            visitors = visitors.Skip((visitorSearchOptions.PageNumber - 1) * 25).Take(25);
             foreach (var visitor in visitors)
             {
                 var VisitorSearchDTO = new VisitorSearchDTO();
                 VisitorSearchDTO.VisitorId = visitor.VisitorId;
                 VisitorSearchDTO.VisitorName = visitor.VisitorName;
                 if (!rooms.Contains(visitor.Visitor.VisitorRoomNumber))
-                    VisitorSearchDTO.VisitorCount = visitor.Visitor.VisitorCount.Value;
+                    VisitorSearchDTO.VisitorCount = visitor.Visitor.VisitorCount!.Value;
                 rooms.Add(visitor.Visitor.VisitorRoomNumber);
                 VisitorSearchDTO.VisitorSurName = visitor.VisitorSurName;
                 VisitorSearchDTO.VisitorStartDate = visitor.Visitor.VisitorStartDate.ToShortDateString();
@@ -1063,19 +1192,23 @@ namespace Capitol.Controllers
                 VisitorSearchDTO.VisitorRoomNumber = visitor.Visitor.VisitorRoomNumber;
                 VisitorSearchDTO.VisitorPaymentCurrency = visitor.Visitor.VisitorPaymentCurrency == null ? " -- " : visitor.Visitor.VisitorPaymentCurrency.Value.ToString();
                 VisitorSearchDTO.VisitorRoomPrice = visitor.Visitor.VisitorRoomPrice == null ? " -- " : visitor.Visitor.VisitorRoomPrice.Value.ToString();
-                VisitorSearchDTO.VisitorRezervation = visitor.Visitor.VisitorRezervation == null ? " -- " : visitor.Visitor.VisitorRezervation;
+                VisitorSearchDTO.VisitorRezervation = visitor.Visitor.Agency?.AgencyName == null ? " -- " : visitor.Visitor.Agency?.AgencyName;
                 if (!visitor.VisitorActive)
                     VisitorSearchDTO.VisitorCount -= 1;
-                VisitorSearchDTOs.Add(VisitorSearchDTO);
+                VisitorSearchDTOs.visitorDetails.Add(VisitorSearchDTO);
             }
-            return Ok(JsonSerializer.Serialize(VisitorSearchDTOs));
+            return Ok(JsonSerializer.Serialize(new
+            {
+                Visitors = VisitorSearchDTOs.visitorDetails,
+                TotalCount = VisitorSearchDTOs.TotalPageCount
+            }));
         }
 
         [Authorize(Policy = "ADMN")]
         [HttpGet]
         public IActionResult MonthlyIncome(int monthNumber)
         {
-            var Payments = _unitOfWork.paymentDal.GetAll(x => x.VisitorPaymentDate.Value.Month == DateTime.Now.AddMonths(monthNumber).Month && x.VisitorPaymentDate.Value.Date.Year == DateTime.Now.AddMonths(monthNumber).Year);
+            var Payments = _unitOfWork.paymentDal.GetAll(x => x.VisitorPaymentDate!.Value.Month == DateTime.Now.AddMonths(monthNumber).Month && x.VisitorPaymentDate.Value.Date.Year == DateTime.Now.AddMonths(monthNumber).Year);
             MonthlyIncomeDTO MonthlyIncome = new MonthlyIncomeDTO();
             MonthlyIncome.Euro = 0;
             MonthlyIncome.Dollar = 0;
@@ -1112,7 +1245,7 @@ namespace Capitol.Controllers
         [HttpGet]
         public IActionResult EmployeeNotes()
         {
-            var reports = _unitOfWork.ReportDal.GetAll(x => x.ReportDate.Date >= DateTime.Now.AddDays(-4).Date).ToList();
+            var reports = _unitOfWork.ReportDal.GetAll().ToList();
             ReportsDTO reportsDTO = new();
             reportsDTO.Report = new();
             reportsDTO.ReportList = reports;
@@ -1141,6 +1274,34 @@ namespace Capitol.Controllers
             return RedirectToAction(nameof(EmployeeNotes));
         }
         [HttpGet]
+        public async Task<IActionResult> AllStayInVisitors()
+        {
+            var visitors = await _unitOfWork.visitorPropertyDal.GetAllPropertiesWithVisitors(x => x.Visitor.VisitorStartDate.Date <= DateTime.Now.Date && x.Visitor.VisitorEndDate.Date >= DateTime.Now.Date && x.Visitor.VisitorState == 2).ToListAsync();
+
+
+            List<AllVisitorDTO> getAllCustomVisitorDTOs = new List<AllVisitorDTO>();
+            foreach (var visitor in visitors)
+            {
+                var customVisitor = new AllVisitorDTO();
+                customVisitor.VisitorStartDate = visitor.Visitor.VisitorStartDate.Date;
+                customVisitor.VisitorCount = visitor.Visitor.VisitorCount;
+                customVisitor.VisitorEndDate = visitor.Visitor.VisitorEndDate.Date;
+                customVisitor.VisitorName = visitor.Visitor.VisitorProperties[0].VisitorName;
+                customVisitor.VisitorSurName = visitor.Visitor.VisitorProperties[0].VisitorSurName;
+                customVisitor.VisitorRezervation = visitor.Visitor.Agency?.AgencyName;
+                customVisitor.VisitorDescription = visitor.Visitor.VisitorDescription;
+                customVisitor.VisitorRoomPrice = visitor.Visitor.VisitorRoomPrice;
+                customVisitor.VisitorTotalVisitDay = (visitor.Visitor.VisitorEndDate.Date - visitor.Visitor.VisitorStartDate.Date).Days;
+                customVisitor.VisitorPaymentIsDone = visitor.Visitor.VisitorPaymentIsDone;
+                customVisitor.VisitorTotalPrice = customVisitor.VisitorTotalVisitDay * customVisitor.VisitorRoomPrice;
+                customVisitor.VisitorState = 2;
+                customVisitor.VisitorRoomNumber = visitor.Visitor.VisitorRoomNumber;
+                getAllCustomVisitorDTOs.Add(customVisitor);
+            }
+
+            return View(getAllCustomVisitorDTOs.OrderBy(x => x.VisitorRoomNumber).ToList());
+        }
+        [HttpGet]
         public IActionResult AllCheckInVisitors()
         {
             var visitors = _unitOfWork.visitorDal.GetAllVisitorsWithProperties(x => (x.VisitorStartDate.Date == DateTime.Now.Date || x.VisitorStartDate.Date == DateTime.Now.AddDays(-1).Date) && x.VisitorState != 5 && x.VisitorState != 2 && x.VisitorEndDate.Date > DateTime.Now.Date);
@@ -1153,7 +1314,7 @@ namespace Capitol.Controllers
                     var customVisitor = _mapper.Map<AllVisitorDTO>(visitor);
                     customVisitor.VisitorName = visitor.VisitorProperties[0].VisitorName;
                     customVisitor.VisitorSurName = visitor.VisitorProperties[0].VisitorSurName;
-                    customVisitor.VisitorRezervation = visitor.VisitorRezervation;
+                    customVisitor.VisitorRezervation = visitor.Agency?.AgencyName;
                     customVisitor.VisitorDescription = visitor.VisitorDescription;
                     customVisitor.VisitorTotalVisitDay = (visitor.VisitorEndDate.Date - visitor.VisitorStartDate.Date).Days;
                     customVisitor.VisitorTotalPrice = customVisitor.VisitorTotalVisitDay * customVisitor.VisitorRoomPrice;
@@ -1178,7 +1339,7 @@ namespace Capitol.Controllers
                 var customVisitor = _mapper.Map<AllVisitorDTO>(visitor);
                 customVisitor.VisitorName = visitor.VisitorProperties[0].VisitorName;
                 customVisitor.VisitorSurName = visitor.VisitorProperties[0].VisitorSurName;
-                customVisitor.VisitorRezervation = visitor.VisitorRezervation;
+                customVisitor.VisitorRezervation = visitor.Agency?.AgencyName;
                 customVisitor.VisitorTotalVisitDay = (visitor.VisitorEndDate.Date - visitor.VisitorStartDate.Date).Days;
                 customVisitor.VisitorState = 0;
                 customVisitor.VisitorTotalPrice = visitor.VisitorRoomPrice * customVisitor.VisitorTotalVisitDay;
@@ -1210,9 +1371,9 @@ namespace Capitol.Controllers
             }
             return Redirect(previusUrl);
         }
-        public IActionResult UnpaidVisitors()
+        public async Task<IActionResult> UnpaidVisitors()
         {
-            var visitors = _unitOfWork.visitorDal.GetAllVisitorsWithProperties(x => x.VisitorPaymentIsDone == false && x.VisitorState == 5);
+            var visitors = await _unitOfWork.visitorDal.GetAllVisitorsWithPaymentAndProperties(x => (x.VisitorPaymentIsDone == false && x.Payments.Count() == 0) && x.VisitorState == 5).ToListAsync();
             List<AllVisitorDTO> getAllCustomVisitorDTOs = new List<AllVisitorDTO>();
             foreach (var visitor in visitors)
             {
@@ -1222,12 +1383,18 @@ namespace Capitol.Controllers
                     var customVisitor = _mapper.Map<AllVisitorDTO>(visitor);
                     customVisitor.VisitorName = names.VisitorName;
                     customVisitor.VisitorSurName = names.VisitorSurName;
-                    customVisitor.VisitorState = visitor.VisitorState == 2 && visitor.VisitorEndDate.Date != DateTime.Now.Date && visitor.VisitorStartDate.Date <= DateTime.Now.Date ? 2 : DateTime.Now.Date >= visitor.VisitorStartDate.Date && DateTime.Now < visitor.VisitorStartDate.Date.AddDays(1).AddHours(12) && visitor.VisitorState != 2 ? 1 : visitor.VisitorEndDate.Date == DateTime.Now.Date ? 0 : visitor.VisitorStartDate.Date < DateTime.Now.Date && visitor.VisitorEndDate.Date > DateTime.Now.Date ? 2 : visitor.VisitorStartDate.Date > DateTime.Now.Date ? 3 : 5;
+                    customVisitor.VisitorRezervation = visitor.Agency?.AgencyName;
+                    customVisitor.VisitorState = visitor.VisitorState == 2 && visitor.VisitorEndDate.Date != DateTime.Now.Date && visitor.VisitorStartDate.Date <= DateTime.Now.Date ? 2 : DateTime.Now.Date >= visitor.VisitorStartDate.Date && DateTime.Now < visitor.VisitorStartDate.Date.AddDays(1).AddHours(12) && visitor.VisitorState != 2 && visitor.VisitorState != 5 ? 1 : visitor.VisitorEndDate.Date == DateTime.Now.Date ? 0 : visitor.VisitorStartDate.Date < DateTime.Now.Date && visitor.VisitorEndDate.Date > DateTime.Now.Date ? 2 : visitor.VisitorStartDate.Date > DateTime.Now.Date ? 3 : 5;
                     getAllCustomVisitorDTOs.Add(customVisitor);
                 }
 
             }
             return View(getAllCustomVisitorDTOs.OrderBy(x => x.VisitorStartDate).ThenBy(x => x.VisitorRoomNumber).ToList());
+        }
+        [HttpGet]
+        public IActionResult MemoryGame()
+        {
+            return View();
         }
     }
 }

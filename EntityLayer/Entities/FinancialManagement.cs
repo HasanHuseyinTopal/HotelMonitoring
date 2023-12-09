@@ -22,7 +22,6 @@ namespace EntityLayer.Entities
     {
         Resepsiyon,
         Müdüriyet,
-        AnaKasa,
-        Ödeme
+        AnaKasa
     }
 }

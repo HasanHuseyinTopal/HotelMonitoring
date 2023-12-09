@@ -10,7 +10,7 @@ namespace EntityLayer.DTOs
         public DateTime? VisitorPaymentDate { get; set; }
         [Required(ErrorMessage = "Ödeme türü seçilmelidir")]
         public PaymentType? VisitorPaymentType { get; set; }
-        [Required(ErrorMessage = "Para türü seçilmelidir")]
+        [Required(ErrorMessage = "Para birimi seçilmelidir")]
         public Currency? VisitorPaymentCurreny { get; set; }
         [Required(ErrorMessage = "Ödenen tutar girilmelidir")]
         public double? VisitorPayment { get; set; }

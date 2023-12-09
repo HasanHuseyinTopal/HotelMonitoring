@@ -21,11 +21,12 @@ namespace DataAccessLayer.Concrate
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Visitor>().Navigation(x => x.Agency).AutoInclude(true);
             foreach (var item in modelBuilder.Model.GetEntityTypes().SelectMany(x => x.GetForeignKeys()))
             {
                 item.DeleteBehavior = DeleteBehavior.Cascade;
             }
-            
+
             modelBuilder.Entity<Room>().HasData(new List<Room>()
             {
                 new Room(){RoomId=1, RoomIsClean=true,RoomNumber=101,RoomState=false},

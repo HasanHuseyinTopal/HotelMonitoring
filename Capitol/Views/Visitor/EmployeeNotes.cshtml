@@ -7,10 +7,11 @@
                 <div class="d-flex my-3 justify-content-between position-relative" style="left:9px;">
                     <select id="sender" asp-for="@Model.Report.Reporter">
                         <option selected disabled hidden>Gönderen</option>
-                        <option>Employee1</option>
-                        <option>Employee2</option>
-                        <option>Employee3</option>
-                        <option>Employee4</option>
+                        <option>Emrullah</option>
+                        <option>Hayrullah</option>
+                        <option>Hüseyin</option>
+                        <option>Kahraman</option>
+                        <option>Rıdvan</option>
                     </select>
                     <div class="d-flex align-items-center justify-content-center">
                         <button class="btn btn-outline-dark mx-3">Ekle</button>
@@ -18,7 +19,7 @@
                 </div>
                 <textarea placeholder="Notunuz..." class="form-control" asp-for="@Model.Report.ReportMessage" style="width:400px; min-width:350px; height:250px"></textarea>
             </div>
-            <div asp-validation-summary="All" class="text-danger"></div>
+            <div  asp-validation-summary="All" class="text-danger position-relative" style="left:30px; top:30px;"></div>
         </form>
 
         <div class="mt-5">

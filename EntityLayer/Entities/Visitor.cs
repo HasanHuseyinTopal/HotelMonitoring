@@ -1,5 +1,6 @@
 ﻿using EntityLayer.DTOs;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityLayer.Entities
 {
@@ -23,7 +24,9 @@ namespace EntityLayer.Entities
         public string? VisitorDescription { get; set; }
         public List<Payment> Payments { get; set; }
         public int? VisitorCount { get; set; }
-        public string? VisitorRezervation { get; set; }
+        [ForeignKey(nameof(Agency))]
+        public int? VisitorAgencyId { get; set; }
+        public Agency Agency { get; set; }
         public bool VisitorPaymentIsDone { get; set; }
         public DateTime? VisitorAddedDate { get; set; }
         public bool VisitorDontChangeRoom { get; set; } = false;

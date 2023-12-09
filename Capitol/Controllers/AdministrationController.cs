@@ -3,10 +3,11 @@ using DataAccessLayer.Concrate;
 using EntityLayer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Capitol.Controllers
 {
-    //[Authorize(Policy = "ADMN")]
+    [Authorize(Policy = "ADMN")]
     public class AdministrationController : Controller
     {
         IUnitOfWorkDal _unitOfWork;
@@ -29,7 +30,7 @@ namespace Capitol.Controllers
                 _unitOfWork.agencyDal.Add(agency);
                 _unitOfWork.Save();
             }
-            return RedirectToAction(nameof(GetAllAgencies));
+            return RedirectToAction(nameof(ShowAllAgencies));
 
         }
         [HttpGet]
@@ -55,9 +56,25 @@ namespace Capitol.Controllers
                 ModelState.AddModelError(string.Empty, "Hatalı Girdi");
                 return View();
             }
-            return RedirectToAction(nameof(GetAllAgencies));
+            return RedirectToAction(nameof(ShowAllAgencies));
 
         }
+        [HttpGet]
+        public IActionResult ChangeAgencyStatus(int AgencyId)
+        {
+            var agency = _unitOfWork.agencyDal.GetOne(x => x.AgencyId == AgencyId);
+            if (agency != null)
+            {
+                if (agency.AgencyStatus == true)
+                    agency.AgencyStatus = false;
+                else
+                    agency.AgencyStatus = true;
+                _unitOfWork.agencyDal.Update(agency);
+                _unitOfWork.Save();
+            }
+            return RedirectToAction(nameof(ShowAllAgencies));
+        }
+
         [HttpGet]
         public IActionResult DeleteAgency(int AgencyId)
         {
@@ -67,13 +84,25 @@ namespace Capitol.Controllers
                 _unitOfWork.agencyDal.Delete(agency);
                 _unitOfWork.Save();
             }
-            return RedirectToAction(nameof(GetAllAgencies));
+            return RedirectToAction(nameof(ShowAllAgencies));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAgencies()
+        {
+            var allAgencies = await _unitOfWork.agencyDal.GetAll(x => x.AgencyStatus == true).ToListAsync();
+            return Ok(allAgencies);
         }
         [HttpGet]
-        public IActionResult GetAllAgencies()
+        public async Task<IActionResult> ShowAllAgencies()
         {
-            var allAgencies = _unitOfWork.agencyDal.GetAll().OrderBy(x => x.AgencyOrderNumber).ToList();
+            var allAgencies = await _unitOfWork.agencyDal.GetAll().ToListAsync();
             return View(allAgencies);
+        }
+        [HttpGet]
+        public IActionResult Management()
+        {
+            return View();
         }
     }
 }

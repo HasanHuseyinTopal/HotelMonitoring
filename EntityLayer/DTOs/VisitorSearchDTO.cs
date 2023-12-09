@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 namespace EntityLayer.DTOs
 {
+    public class VisitorSearchDTOs
+    {
+        public VisitorSearchDTOs()
+        {
+            visitorDetails = new();
+        }
+        public List<VisitorSearchDTO> visitorDetails;
+        public int TotalPageCount { get; set; }
+    }
     public class VisitorSearchDTO
     {
         public int VisitorId { get; set; }
@@ -18,6 +27,7 @@ namespace EntityLayer.DTOs
         public string? VisitorRezervation { get; set; }
         public string? VisitorPaymentCurrency { get; set; }
         public string? VisitorRoomPrice { get; set; }
+        public int TotalPageCount { get; set; }
 
     }
 }

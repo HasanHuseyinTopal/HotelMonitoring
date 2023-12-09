@@ -41,7 +41,7 @@
         <header class="my-4" style="font-weight: 600; color: #202040;">Ziyaretçi Ödeme Formu</header>
         <div class="d-flex align-items-center">
             <div class="shadow-sm d-inline-block border fs-4 text-black border-5 rounded-3 p-3" style="background-image:linear-gradient(45deg,aqua,aqua,white,white)">
-                <span>@(Model.VisitorName)</span> <span style="font-weight:bolder; color:darkred;">//</span> <span id="paymentInput">@(Model.VisitorTotalPrice!.Value.ToString("0.00"))</span><span>@(Model.VisitorTotalPriceCurrency!.Value)</span>
+                <span>@(Model.VisitorName)</span> <span style="font-weight:bolder; color:darkred;">//</span> <span id="paymentInput">@(Model.VisitorTotalPrice!.Value.ToString("0.00"))</span><span> @(Model.VisitorTotalPriceCurrency!.Value)</span>
             </div>
             <div class="mx-3 copyPayment d-flex">
                 <img  src="~/Images/copy.png" />

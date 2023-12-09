@@ -23,6 +23,7 @@
 
     .unFixedTable {
         background-image: linear-gradient(grey,black,#1c1f23,#1c1f13,#1c1f23,black) !important;
+        font-size: 18px;
     }
 
     .roomShower {
@@ -30,12 +31,8 @@
         color: white !important;
     }
 
-    #previus:hover {
-        background-color: aliceblue !important;
-    }
-
-    #next:hover {
-        background-color: aliceblue !important;
+    #next:hover, #previus:hover {
+        background-image: linear-gradient(#820000,#B70404) !important;
     }
 
     #detailsShower {
@@ -46,12 +43,28 @@
         border-radius: 25px;
         transition: 0.5s;
     }
-
-        #detailsShower:hover {
-            border: 5px solid aliceblue;
-            color: darkred;
-            transition: 0.5s;
+    .specialBorder {
+        overflow: hidden;
+    }
+        .specialBorder div::before {
+            content: "";
+            position: absolute;
+            z-index: -10;
+            width: 150px;
+            height: 150px;
+            border-radius: 75px;
+            top: -45px;
+            right: -45px;
+            background-image: conic-gradient(#0a0a0a,#121212,#1e1e1e,#333333,#0a0a0a,#121212,#1e1e1e,#333333,#0a0a0a,#121212,#1e1e1e,#333333,#0a0a0a,#121212,#1e1e1e,#333333,darkred,darkred,darkred,#1e1e1e,#333333);
+            filter: blur(20px);
+            animation: turnySpecialBorder 2s linear infinite;
         }
+
+    #detailsShower:hover {
+        border: 5px solid aliceblue;
+        color: darkred;
+        transition: 0.5s;
+    }
 
     .turny {
         position: absolute;
@@ -79,12 +92,20 @@
             transform: rotate(-5deg)
         }
     }
+
+    @@keyframes turnySpecialBorder {
+        0% {
+            transform: rotate(0)
+        }
+        100% {
+            transform: rotate(360deg)
+        }
+    }
 </style>
 
 
 
-
-<div id="topMaster" class="d-flex justify-content-center align-items-center d-none unFixedTable fixed-top text-light" style=" left:121.4px;">
+<div id="topMaster" class="d-flex justify-content-center align-items-center d-none unFixedTable fixed-top text-light" style="font-size:18px; left:121.4px;">
     <table class="table table-borderless text-light" style="height: 60px; margin:0;">
         <tr class="roomShower">
             <th>@DateTime.Now.AddMonths(Model.monthNumber).ToString("MMM")</th>
@@ -139,7 +160,7 @@
         }
     </div>
     <div id="detailsShower" class="d-flex fw-bolder fs-1 font-monospace position-absolute justify-content-center align-items-center">
-        i
+        <a class="text-dark" asp-controller="Visitor" asp-action="HotelStatisticsPage">i</a>
     </div>
     <div id="details" class="bg-white position-absolute d-none fw-bolder fs-3 d-flex row align-items-center justify-content-center" style="height:400px;  width:600px; left:134px; top:256px; z-index:2; border:2px solid black; border-bottom-right-radius:25px;">
         <div>Toplam Oda Sayısı :  <span style="-webkit-text-stroke:1px orange;" class="text-warning">@Model.TotalRoomCount</span></div>
@@ -161,7 +182,7 @@
 <div id="fixedTable" class="mt-3 col-12 d-flex">
     <button id="previus" class="btn btn-outline-dark border border-3 border-dark mx-4" style="width:80px;"></button>
     <table class="table table-borderless table-hover">
-        <tr class="roomShower coloredShower" style="height:60px;">
+        <tr class="roomShower coloredShower" style="height:60px; font-size:18px;">
             <th>@DateTime.Now.AddMonths(Model.monthNumber).ToString("MMM")</th>
             <th>101</th>
             <th>102</th>
@@ -194,7 +215,11 @@
             <tr>
                 @if (DateTime.Now.Day == i && DateTime.Now.Month == DateTime.Now.AddMonths(Model.monthNumber).Month)
                 {
-                    <td class="text-break" valign="middle" align="center" style="background-image: linear-gradient(black,black); color:lawngreen;  font-size: 16px; font-weight:600; height: 60px;"> @DateTime.Now.AddMonths(Model.monthNumber).ToString("ddd") @(i)</td>
+                    <td class="text-break position-relative m-3 p-0 specialBorder" valign="middle" align="center" style=" color:lawngreen;  font-size: 16px; font-weight:600; height: 60px;">
+                        <div>
+                            @DateTime.Now.AddMonths(Model.monthNumber).ToString("ddd") @(i)
+                        </div>
+                    </td>
                 }
                 else
                 {
@@ -206,22 +231,22 @@
                     {
                         if (DateTime.Now.Day == i && DateTime.Now.Month == DateTime.Now.AddMonths(Model.monthNumber).Month)
                         {
-                            <td data-roomNumber="@Model.roomNumbers[j]" class="text-break columns" valign="middle" align="center" style="background-image:linear-gradient(@( Model.tableValues[j,i].DontChange == true ? "black,grey": Model.tableValues[j,i].CellState == 1 ? "#820000,#B70404" : Model.tableValues[j,i].CellState == 3 ? "darkorange,orangered" :"#54B435,#82CD47")); font-weight:600; color:white; text-shadow:0 0 2px black;"><span class="TransferShower" data-transfer="@(Model.tableValues[j,i].TransferDatas!=null ? Model.tableValues[j, i].TransferDatas:"" )" style="color: wheat; display: block; ">@(Model.tableValues[j, i].TransferDatas != null ? "●●●" : "")</span><a style="color:white;" href="@(Model.tableValues[j,i].Name == null ? null : "https://localhost:7121/Visitor/SelectedVisitors?visitorId=" + Model.tableValues[j,i].Identity)"> @(Model.tableValues[j, i].Name== null ? Model.roomNumbers[j]: Model.tableValues[j,i].Name)</a></td>
+                            <td data-roomNumber="@Model.roomNumbers[j]" data-crashed="@(Model.tableValues[j,i].CellState==3 &&Model.tableValues[j, i].Name!= null  ? Model.tableValues[j,i].crashedDate :null)" class="text-break columns" valign="middle" align="center" style="background-image:linear-gradient(@(Model.tableValues[j,i].DontChange == true ? "black,grey": Model.tableValues[j,i].CellState == 1 ? "#820000,#B70404" : Model.tableValues[j,i].CellState == 3 ? "darkorange,orangered" :"#54B435,#82CD47")); font-weight:600; color:white; text-shadow:0 0 2px black;"><span class="TransferShower" data-transfer="@(Model.tableValues[j,i].TransferDatas!=null ? Model.tableValues[j, i].TransferDatas:"" )" style="color: wheat; display: block; ">@(Model.tableValues[j, i].TransferDatas != null ? "●●●" : "")</span><a style="color:white;" href="@(Model.tableValues[j,i].Name == null ? null : "https://localhost:7121/Visitor/SelectedVisitors?visitorId=" + Model.tableValues[j,i].Identity)"> @(Model.tableValues[j, i].Name== null ? Model.roomNumbers[j]: Model.tableValues[j,i].Name)</a></td>
                         }
                         else
                         {
-                            <td data-roomNumber="@Model.roomNumbers[j]" class="text-break columns" valign="middle" align="center" style="background-image: linear-gradient( @(Model.tableValues[j,i].DontChange == true ? "black,grey ":Model.tableValues[j,i].CellState == 1 ? "#B70404,#820000" : Model.tableValues[j,i].CellState == 3 ? "darkorange,orangered": "white,white") );font-weight: 600;color: white;text-shadow: 0 0 2px black;"><span class="TransferShower" data-transfer="@(Model.tableValues[j,i].TransferDatas!=null ? Model.tableValues[j, i].TransferDatas:"" )" style="color:wheat; display:block;">@(Model.tableValues[j,i].TransferDatas !=null ? "●●●" : "")</span> <a  style="color:white;" href="@(Model.tableValues[j,i].Name == null ? null : "https://localhost:7121/Visitor/SelectedVisitors?visitorId=" + Model.tableValues[j,i].Identity)"> @(Model.tableValues[j, i].Name== null ? null: Model.tableValues[j,i].Name)</a></td>
+                            <td data-roomNumber="@Model.roomNumbers[j]" data-crashed="@(Model.tableValues[j,i].CellState==3 &&Model.tableValues[j, i].Name!= null  ? Model.tableValues[j,i].crashedDate :null)" class="text-break columns" valign="middle" align="center" style="background-image: linear-gradient(@(Model.tableValues[j,i].DontChange == true ? "black,grey ":Model.tableValues[j,i].CellState == 1 ? "#B70404,#820000" : Model.tableValues[j,i].CellState == 3 ? "darkorange,orangered": "white,white"));font-weight: 600;color: white;text-shadow: 0 0 2px black;"><span class="TransferShower" data-transfer="@(Model.tableValues[j,i].TransferDatas!=null ? Model.tableValues[j, i].TransferDatas:"" )" style="color:wheat; display:block;">@(Model.tableValues[j,i].TransferDatas !=null ? "●●●" : "")</span> <a style="color:white;" href="@(Model.tableValues[j,i].Name == null ? null : "https://localhost:7121/Visitor/SelectedVisitors?visitorId=" + Model.tableValues[j,i].Identity)"> @(Model.tableValues[j, i].Name== null ? null: Model.tableValues[j,i].Name)</a></td>
                         }
                     }
                     else if (j == 24)
                     {
 
-                        <td style="font-weight:600; color:@(Model.tableValues[24,i].count>24 ? "red":"black"); background-color:antiquewhite;">@(Model.tableValues[24, i].count == 0 ? "" : Model.tableValues[24,i].count)</td>
+                        <td style="font-weight:600;  color:@(Model.tableValues[24,i].count>24 ? "red":"black"); background-color:antiquewhite;">@(Model.tableValues[24, i].count == 0 ? "" : Model.tableValues[24,i].count)</td>
                     }
                 }
             </tr>
         }
-        <tr class="roomShower" style="height:60px;">
+        <tr class="roomShower" style="height:60px; font-size:18px;">
             <th>@DateTime.Now.AddMonths(Model.monthNumber).ToString("MMM")</th>
             <th>101</th>
             <th>102</th>
@@ -253,8 +278,18 @@
     <button style="width:80px;" id="next" class="btn btn-outline-dark border border-3 border-dark mx-4"></button>
 </div>
 
+
+
 @section Scripts{
     <script>
+
+
+        $("[data-crashed][data-crashed!='']").each((i, e) => {
+            let startDate=$(e).attr("data-crashed")
+            let roomNumber = $(e).attr("data-roomnumber")
+            $($(e)[0].childNodes[2]).attr('href', 'https://localhost:7121/Visitor/CrashedVisitors?RoomNumber=' + roomNumber + '&StartDate=' + startDate)
+        })
+
         var Fullfilled = document.getElementById("fullState");
         let colorValue=@Model.MonthlyPercent.ToString("0");
         var color = "rgb(" + (255 -colorValue * 2.55) + "," + colorValue * 2.55 + ",0)";
@@ -303,14 +338,14 @@
                 let roomNumber = $(e.currentTarget).attr("data-roomNumber");
                 document.querySelectorAll("th").forEach((th) => {
                     if (data.includes($(th).html())) {
-                        $(th).css({ background: 'linear-gradient(yellow,yellow)', color: "black" })
+                        $(th).css({ background: 'linear-gradient(yellow,yellow)', color: "black", 'font-size': "18px" })
                     }
                     else {
                         if ($(th).html() == roomNumber) {
-                            $(th).css({ background: 'linear-gradient(white,white)', color: "black" })
+                            $(th).css({ background: 'linear-gradient(black,white,white,white,white,white)', color: "black", 'font-size': "25px" })
                         }
                         else {
-                            $(th).css({ background: 'linear-gradient(grey,black,#1c1f23,#1c1f13,#1c1f23,black)', color: "white" })
+                            $(th).css({ background: 'linear-gradient(grey,black,#1c1f23,#1c1f13,#1c1f23,black)', color: "white", 'font-size': "18px" })
                         }
                     }
                 })
@@ -318,15 +353,27 @@
             $(".columns").on("mouseleave", (e) => {
                 document.querySelectorAll("th").forEach((th) => {
                     if (data.includes($(th).html())) {
-                        $(th).css({ background: 'linear-gradient(yellow,yellow)', color: "black" })
+                        $(th).css({ background: 'linear-gradient(yellow,yellow)', color: "black", 'font-size': "18px" })
                     }
                     else {
-                        $(th).css({ background: 'linear-gradient(grey,black,#1c1f23,#1c1f13,#1c1f23,black)', color: "white" })
+                        $(th).css({ background: 'linear-gradient(grey,black,#1c1f23,#1c1f13,#1c1f23,black)', color: "white", 'font-size': "18px" })
                     }
                 })
             })
         });
 
+        $(document).ready(() => {
+            let yükseklik = document.getElementById("fixedTable").getBoundingClientRect().top;
+
+            if (yükseklik <= -3) {
+                $(".unFixedTable").removeClass("d-none")
+                let widhtUnFixed = $(".roomShower")[1].clientWidth + 1.5;
+                $("#topMaster").width(widhtUnFixed);
+            }
+            else {
+                $(".unFixedTable").addClass("d-none")
+            }
+        })
 
         $(document).on("scroll", () => {
             let yükseklik = document.getElementById("fixedTable").getBoundingClientRect().top;

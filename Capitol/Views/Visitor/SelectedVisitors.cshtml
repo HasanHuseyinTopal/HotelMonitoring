@@ -28,6 +28,41 @@
             opacity: 1;
         }
 
+    .languageSelector {
+        display: flex;
+        align-items: center;
+        height: 45px;
+        width: 73px;
+        box-shadow: 2px 2px 4px black,0 0 2px black,0 0 4px silver;
+        color: white;
+        padding-bottom: 8px;
+        letter-spacing: 2px;
+        font-weight: 600;
+    }
+
+    .Trk.languageSelector {
+        background-color: darkred;
+        border-bottom-left-radius: 100%;
+        justify-content: end;
+        padding-right: 20px;
+        margin-right: 2px;
+        opacity: 0.4;
+        color: black;
+        box-shadow: 2px 2px 4px black, 0 0 2px black,0 0 4px silver;
+        transition:0.3s;
+    }
+
+    .Eng.languageSelector {
+        background-color: darkgreen;
+        border-bottom-right-radius: 100%;
+        justify-content: start;
+        padding-left: 20px;
+        margin-left: 2px;
+        box-shadow: 0 0 4px black;
+        transition:0.3s;
+        opacity:1;
+    }
+
     .OffLine {
     }
 
@@ -272,7 +307,7 @@
         background-position: 100% 0%;
         transition: .2s;
         height: 100px;
-        width: 100px;
+        width: 150px;
         border: 3px solid black;
         border-radius: 10px;
         box-shadow: 2px 2px 4px black;
@@ -285,6 +320,9 @@
             color: black;
             transition: .2s;
         }
+    .voucherTextColor {
+        color:darkred;
+    }
 
     .letter {
         background: #fafafa;
@@ -342,6 +380,15 @@
         z-index: 5;
         box-sizing: content-box;
     }
+
+    .mainRoomNumber {
+        text-shadow: 2px 2px 2px black,0 0 5px silver,0 0 10px wheat;
+    }
+
+    #selectedCard span {
+        font-weight: 600;
+        font-size: 20px;
+    }
 </style>
 
 @if (ViewBag.RoomNumber >= 99)
@@ -356,7 +403,7 @@
                     </div>
                 </a>
             </div>
-            <h1 class="position-relative" style="color:wheat; left:8px; letter-spacing:20px; user-select:none; font-size:66px; text-shadow:2px 2px 3px black;">@ViewBag.RoomNumber</h1>
+            <h1 class="position-relative mainRoomNumber" style="color:wheat; left:8px; letter-spacing:20px; user-select:none; font-size:66px;">@ViewBag.RoomNumber</h1>
             <div class="previous-next-buttons d-flex justify-content-center">
                 <a asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="@(ViewBag.RoomNumber<702 ? ViewBag.ListOfRooms[Array.IndexOf(ViewBag.ListOfRooms,ViewBag.RoomNumber)+1]:ViewBag.RoomNumber == 702 ? 101:702)">
                     <div class="previous-next-buttons__nav">
@@ -398,7 +445,7 @@
                         </div>
                     </a>
                 </div>
-                <h1 class="position-relative     outSide" style="color:wheat; left:8px; letter-spacing:20px; user-select:none; font-size:66px; text-shadow:2px 2px 3px black;">@Model[0].VisitorRoomNumber</h1>
+                <h1 class="position-relative  mainRoomNumber   outSide" style="color:wheat; left:8px; letter-spacing:20px; user-select:none; font-size:66px;">@Model[0].VisitorRoomNumber</h1>
                 <div class="previous-next-buttons d-flex justify-content-center">
                     <a asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="@(Model[0].VisitorRoomNumber<702 ? ViewBag.ListOfRooms[Array.IndexOf(ViewBag.ListOfRooms,Model[0].VisitorRoomNumber)+1]:Model[0].VisitorRoomNumber == 702 ? 101:702)">
                         <div class="previous-next-buttons__nav">
@@ -407,11 +454,13 @@
                     </a>
                 </div>
                 <div class="d-flex justify-content-center position-absolute mt-5" style="top:62px; left:50px;">
-                    <a asp-controller="Visitor" asp-action="AddVisitor" asp-route-RoomNumber="@(Model[0].VisitorRoomNumber<702 ? ViewBag.ListOfRooms[Array.IndexOf(ViewBag.ListOfRooms,Model[0].VisitorRoomNumber)]:Model[0].VisitorRoomNumber == 702 ? 101:702)">
-                        <div id="addVisitorCircle">
-                            +
-                        </div>
-                    </a>
+                    <div id="addVisitorCircle" class="VoucherGenerator">
+                        Vo
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center position-absolute mt-5" style="top:165px; left:50px;">
+                    <div class="Trk languageSelector" data-selected="false">TR</div>
+                    <div class="Eng languageSelector" data-selected="true">EN</div>
                 </div>
                 <div class="d-flex justify-content-center position-absolute mt-5" style="top:95px; right:50px;">
                     <label class="switch">
@@ -440,10 +489,10 @@
                         {
                             <div class="d-flex position-relative justify-content-start mt-4 mx-3">
                                 <div class="d-flex ActiveName" data-id="@visitorProperties.VisitorPropertiyId">
-                                    <div class="px-3">
+                                    <div class="nameClass px-3">
                                         @visitorProperties.VisitorName
                                     </div>
-                                    <div class="px-3">
+                                    <div class="surnameClass px-3">
                                         @(visitorProperties.VisitorSurName==null ? "": visitorProperties.VisitorSurName.ToUpper())
                                     </div>
                                 </div>
@@ -518,6 +567,9 @@
                         </div>
                     }
                     <div class="d-flex flex-column position-relative" style="font-weight:500; background-color:black;text-shadow:none; height:100%; min-width:400px; opacity: 0.8; border-radius: 0 0 0 25px; display:flex; justify-content:center; align-items:start;">
+                        <a asp-controller="Visitor" asp-action="MonthlyView" asp-route-monthNumber="@(((visitor.VisitorStartDate.Year-DateTime.Now.Year)*12)+ (visitor.VisitorStartDate.Month-DateTime.Now.Month))">
+                            <div style="height: 20px; width: 20px; background-color:wheat; border-bottom-left-radius:100%; top: 0; right: 0" class="position-absolute"> </div>
+                        </a>
                         @if (visitor.VisitorDescription != null)
                         {
                             <div class="letter position-absolute text-break" style="left:-600px; line-height:38px; color:black;">
@@ -542,6 +594,7 @@
                                 <div class="px-3">
                                     @visitor.VisitorStartDate.ToString("d MMM")
                                 </div>
+                                <span style="color:wheat; margin-right:10px;">-</span>
                                 <div class="px-1">
                                     @visitor.VisitorEndDate.ToString("d MMM")
                                 </div>
@@ -558,7 +611,7 @@
                             </div>
                             <div class="d-flex justify-content-start mt-3 mx-3">
                                 <div class="px-3">
-                                    @(visitor.VisitorRezervation==null ? "--" :  visitor.VisitorRezervation) <span style="color:wheat">&</span> @(visitor.VisitorRoomPrice==null ? "--":visitor.VisitorRoomPrice.Value.ToString("0.00")) @(visitor.VisitorPaymentCurrency.ToString() == "EURO" ? "€" : visitor.VisitorPaymentCurrency.ToString() == "USD" ? "$":visitor.VisitorPaymentCurrency.ToString() == "TL" ? "₺":"")
+                                    @(visitor.VisitorAgencyName==null ? "--" :  visitor.VisitorAgencyName) <span style="color:wheat">&</span> @(visitor.VisitorRoomPrice==null ? "--":visitor.VisitorRoomPrice.Value.ToString("0.00")) @(visitor.VisitorPaymentCurrency.ToString() == "EURO" ? "€" : visitor.VisitorPaymentCurrency.ToString() == "USD" ? "$":visitor.VisitorPaymentCurrency.ToString() == "TL" ? "₺":"")
                                 </div>
                             </div>
                             <div class="d-flex justify-content-start mt-3 mx-3">
@@ -642,7 +695,7 @@
                     }
                     else
                     {
-                <div class="process shift" style="  right: 180px;">●●●</div>
+                        <div class="process shift" style="  right: 180px;">●●●</div>
                     }
                     <a asp-controller="Visitor" asp-action="CheckOutVisitor" asp-route-id="@visitor.VisitorId">
                         <div class="process leave" style=" left: 180px;">Çıkış</div>
@@ -656,19 +709,211 @@
                 </div>
             </div>
             <hr style=" margin-bottom:100px;" />
+
+            <div style="display:none;">
+                <div id="selectedCard" class="d-flex justify-content-center" style="margin-top:100px;">
+                    <div style="width: 1000px; border-radius: 10px; box-shadow:0 0 2px black; background-image: linear-gradient(white,whitesmoke); padding: 10px;">
+                        <div class="d-flex mb-3">
+                            <div class="me-5">
+                                <img style="height:110px;" src="~/Images/logo.png" />
+                            </div>
+                            <div class="d-flex flex-column justify-content-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-4 d-flex justify-content-center" style="width:50px;">
+                                        <i class="fa-solid fa-location-dot voucherTextColor"></i>
+                                    </div>
+                                    <span>Asmalımescit Sokak, No:24 Tepebaşı - İSTANBUL</span>
+                                </div>
+                                <div class="d-flex align-items-center my-2">
+                                    <div class="me-4 d-flex justify-content-center" style="width:50px;">
+                                        <i class="fa-solid fa-house"></i>
+                                    </div>
+                                    <span>Tel: +90 212 251 80 30</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-4 d-flex justify-content-center" style="width:50px;">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </div>
+                                    <span>Whatsapp: +90 532 597 84 56</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="width:980px; height:550px; border:3px solid black; border-radius:10px;">
+                            <div class="d-flex" style="height:100px">
+                                <div class="d-flex mx-3 justify-content-center m-auto align-items-center" style="width:25%;">
+                                    <span class="En text-center">
+                                        NAME - SURNAME
+                                    </span>
+                                    <span class="Tr text-center">
+                                        AD - SOYAD
+                                    </span>
+                                </div>
+                                <div style="height:100px; width:3px; background-color:black;"></div>
+                                <div class="d-flex justify-content-center align-items-center" style="width:70%;">
+                                    <span id="nameCleaner" class="voucherTextColor">@visitor.VisitorProperties[0].VisitorName </span>&nbsp;&nbsp;
+                                    <span class="voucherTextColor">@visitor.VisitorProperties[0].VisitorSurName</span>
+                                </div>
+                            </div>
+                            <div style="width: 977px; height: 3px; background-color: black;"></div>
+                            <div class="d-flex" style="height:100px">
+                                <div class="d-flex mx-3 justify-content-center align-items-center" style="width:25%;">
+                                    <span class="En text-center">
+                                        DAİLY / TOTAL PRİCE
+                                    </span>
+                                    <span class="Tr text-center">
+                                        GÜNLÜK / TOPLAM FİYAT
+                                    </span>
+                                </div>
+                                <div style="height:100px; width:3px; background-color:black;"></div>
+                                <div class="d-flex justify-content-center align-items-center" style="width:39%">
+                                    <span class="voucherTextColor">@visitor.VisitorRoomPrice?.ToString("0.00") @visitor.VisitorPaymentCurrency</span> &nbsp; / &nbsp; <span class="voucherTextColor">@visitor.VisitorTotalPrice?.ToString("0.00") @visitor.VisitorPaymentCurrency</span>
+                                </div>
+                                <div style="height:100px; width:3px; background-color:black;"></div>
+                                <div class="d-flex mx-3 justify-content-center align-items-center" style="width:15%;">
+                                    <span class="En text-center">
+                                        ROOM NO
+                                    </span>
+                                    <span class="Tr text-center">
+                                        ODA NUMARASI
+                                    </span>
+                                </div>
+                                <div style="height:100px; width:3px; background-color:black;"></div>
+                                <div class="d-flex justify-content-center align-items-center" style="width:13%">
+                                    <span class="voucherTextColor">@visitor.VisitorRoomNumber</span>
+                                </div>
+                            </div>
+                            <div style="width: 977px; height: 3px; background-color: black;"></div>
+                            <div class="d-flex" style="height:100px">
+                                <div class="d-flex mx-3 justify-content-center align-items-center text-center" style="width:25%">
+                                    <span class="En text-center">
+                                        PHONE NUMBER
+                                    </span>
+                                    <span class="Tr text-center">
+                                        TEL. NUMARASI
+                                    </span>
+                                </div>
+                                <div style="height:100px; width:3px; background-color:black;"></div>
+                                <div class="d-flex justify-content-center align-items-center" style="width:39%;">
+                                    <span class="voucherTextColor">@visitor.VisitorPhoneNumber</span>
+                                </div>
+                                <div style="height:100px; width:3px; background-color:black;"></div>
+                                <div class="d-flex mx-3 align-items-center justify-content-center" style="width:15%;">
+                                    <span class="En text-center">
+                                        NİGHTS
+                                    </span>
+                                    <span class="Tr text-center">
+                                        GECE
+                                    </span>
+                                </div>
+                                <div style="height:100px; width:3px; background-color:black;"></div>
+                                <div class="d-flex justify-content-center align-items-center" style="width:13%;">
+                                    <span class="voucherTextColor">@visitor.VisitorTotalVisitDay</span>
+                                </div>
+                            </div>
+                            <div style="width:977px; height:3px; background-color:black;"></div>
+                            <div class="d-flex" style="height:100px">
+                                <div class="d-flex mx-3 justify-content-center align-items-center" style="width:50%">
+                                    <span class="En text-center">
+                                        CHECK-IN : <span class="ms-4 voucherTextColor">@visitor.VisitorStartDate.ToShortDateString()</span>
+                                    </span>
+                                    <span class="Tr text-center">
+                                        GİRİŞ : <span class="ms-4 voucherTextColor">@visitor.VisitorStartDate.ToShortDateString()</span>
+                                    </span>
+                                </div>
+                                <div style="height:100px; width:3px; background-color:black;"></div>
+                                <div class="d-flex mx-3 justify-content-center align-items-center" style="width:50%">
+                                    <span class="En text-center">
+                                        CHECK-OUT :<span class="ms-4 voucherTextColor">@visitor.VisitorEndDate.ToShortDateString()</span>
+                                    </span>
+                                    <span class="Tr text-center">
+                                        ÇIKIŞ : <span class="ms-4 voucherTextColor">@visitor.VisitorEndDate.ToShortDateString()</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div style="width:977px; height:3px; background-color:black;"></div>
+                            <div class="d-flex">
+                                <div class="d-flex justify-content-center mt-4 mx-3 align-items-center" style="width:100%;">
+                                    <span class="En text-center">
+                                        THE MANAGEMENT CAN NOT BE HELD RESPONSIBLE FOR ANY LOSS OF MONEY, JEWELLERY OR VALUES. SAFE DEPOSİT BOXES ARE AVAILABLE FOR OUR GUESTS AT THE FRONTDESK CASHIERS. CHECK-IN TİME İS 12:30 PM, CHECK-OUT TIME IS 12:00 PM.
+                                    </span>
+                                    <span class="Tr text-center">
+                                        PARA,MÜCEVHERAT ve DEĞERLİ EŞYALARIN KAYBINDAN OTEL MESUL TUTULAMAZ. EŞYALARIN KORUNMASINA MAHSUS KASALAR RESEPSİYONDA HİZMETİNİZDEDİR. GİRİŞ SAATİ ÖĞLEN 12:30 ÇIKIŞ SAATİ İSE ÖĞLEN 12:00'DİR.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
         }
     </div>
 }
 
 
+
+
 @section Scripts{
     <script>
 
+        let closed = { 'box-shadow': "2px 2px 4px black, 0 0 2px black,0 0 4px silver", 'color': "black", 'opacity': "0.4", 'transition': "0.3s" };
+        let opened = { 'box-shadow': "0 0 4px black", 'color': "white", 'opacity': "1", 'transition': "0.3s" }
 
-        //$("#converter").on("click", () => {
-        //    let element = document.getElementById("mainCard");
-        //    html2pdf().from(element).save();
-        //})
+        $(".Trk").on("click", () => {
+            $(".Eng").css(closed)
+            $(".Trk").css(opened);
+            $(".Trk").attr("data-selected", "true")
+            $(".Eng").attr("data-selected", "false")
+
+        })
+
+        $(".Eng").on("click", () => {
+            $(".Trk").css(closed)
+            $(".Eng").css(opened);
+            $(".Trk").attr("data-selected", "false")
+            $(".Eng").attr("data-selected", "true")
+        })
+
+
+        function removeNumbersAndHyphens(inputText) {
+            var cleanedText = inputText.replace(/[0-9-]/g, '');
+
+            return cleanedText;
+        }
+
+
+        $(".VoucherGenerator").on("click", () => {
+
+            if ($(".Eng").attr("data-selected") == "true") {
+                $(".Tr").css({ 'display': "none" })
+                $(".En").css({ 'display': "inherit" })
+            }   
+            else if ($(".Trk").attr("data-selected") == "true") {
+                $(".En").css({ 'display': "none" })
+                $(".Tr").css({ 'display': "inherit" })
+            }
+
+
+            var visitorName = $("#nameCleaner").html()
+            var visitorSurname = $(".surnameClass").html()
+
+            visitorName = removeNumbersAndHyphens(visitorName);
+            $("#nameCleaner").html(visitorName)
+
+            var opt = {
+                margin: 1,
+                filename: (visitorName + visitorSurname + "Reservation.pdf"),
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 5 },
+                jsPDF: { unit: 'cm', format: 'a3', orientation: 'portrait' }
+            };
+
+            let element = document.getElementById("selectedCard");
+            element.style.height = "830px";
+            html2pdf().set(opt).from(element).save();
+        })
+
 
         $(".imgContainer").on("click", () => {
             let img = document.getElementsByClassName("imageCheck");

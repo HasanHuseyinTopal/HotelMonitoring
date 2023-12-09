@@ -4,7 +4,7 @@
 <div class="d-flex  justify-content-evenly align-items-center">
     <a id="previus" class="bnptn-arrow bnptn-arrow-left" title="previus"></a>
     <div class="d-flex justify-content-center align-items-center">
-        <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">@DateTime.Now.AddMonths(Model.MonthNumber).Year <span style="color:darkred;">-</span> @DateTime.Now.AddMonths(Model.MonthNumber).ToString("MMMM")</span>
+        <span class="text-black shadow-sm px-5" style="font-size:xx-large; border-radius:20px; font-weight:600; font-size:50px;">@DateTime.Now.AddMonths(Model.MonthNumber).Year <span style="color:darkred;">-</span> @DateTime.Now.AddMonths(Model.MonthNumber).ToString("MMMM")</span>
         <div class="wrappers">
             <div class="containers">
                 <div class="d-flex justify-content-center bg-warning py-3">
@@ -42,7 +42,7 @@
             if (endValue > 0) {
                 let duration = Math.floor(interval / endValue);
                 let counter = setInterval(function () {
-                    startValue += Math.floor((endValue / 54))
+                    startValue += Math.floor((endValue / 44))
                     valueDisplay.textContent = startValue;
                     if (startValue >= endValue) {
                         valueDisplay.textContent = endValue;

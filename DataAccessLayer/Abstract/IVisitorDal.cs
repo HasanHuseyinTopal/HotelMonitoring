@@ -14,6 +14,7 @@ namespace DataAccessLayer.Abstract
         IQueryable<Visitor> GetAllVisitorsWithPaymentAndProperties(Expression<Func<Visitor, bool>> filter = null);
         IQueryable<Visitor> GetAllVisitorsWithProperties(Expression<Func<Visitor, bool>> filter = null);
         Visitor GetOneWithProperties(Expression<Func<Visitor, bool>> filter = null);
+        Visitor GetOneWithPropertiesAndHistories(Expression<Func<Visitor, bool>> filter = null);
         void GetChangedVisitorProperties(int VisitorId, UpdateVisitorDTO NewVisitor);
     }
 }

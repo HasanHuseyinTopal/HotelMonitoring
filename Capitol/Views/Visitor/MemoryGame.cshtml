@@ -1,0 +1,138 @@
+﻿
+
+<style>
+    .box {
+        width: 200px;
+        height: 200px;
+        border: 2px solid black;
+        background-color: wheat;
+        box-sizing: border-box;
+    }
+</style>
+
+
+
+<div class="d-flex">
+    <div class="col-3 d-flex ps-5 pt-5 justify-content-center">
+        <div class="pt-5">
+            <button id="start" class="btn btn-primary">Başlat</button>
+        </div>
+        <div class="p-5">
+            <button id="check" class="btn btn-warning">Kontrol</button>
+        </div>
+        <div class="pt-5">
+            <div class="btn btn-success">
+                <span>Seviye : </span> <span id="level">1</span>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex col-9 justify-content-center align-items-center p-5">
+        <div style="width:1000PX; height:1010px; border:5px solid darkred; box-sizing:border-box;">
+            @for (int i = 0; i < 5; i++)
+            {
+                <div class="d-flex justify-content-center align-items-center">
+                    @for (int j = 0; j < 5; j++)
+                    {
+                        <div class="box" data-number="@(i*5+j)">
+
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        window.scrollTo(0, document.body.scrollHeight);
+
+        let level = 1;
+        let lightedBoxes = [];
+        let clickedLightedBoxes = [];
+        let clickCount = 0;
+        let StartPoint = 0;
+        let boxCount = 25;
+        let startCheck = false;
+
+
+        let animateBoxes = setInterval(() => {
+            
+            let randomBoxes1 = Math.floor(Math.random() * boxCount);
+            let randomBoxes2 = Math.floor(Math.random() * boxCount);
+            $($(".box")[randomBoxes1]).css({ 'background-color': "white", 'transition': "0.5s" })
+            $($(".box")[randomBoxes2]).css({ 'background-color': "wheat", 'transition': "0.5s" })
+        },250)
+
+        function LevelIsDone(bot, player) {
+            if (bot.length !== player.length) {
+                return false;
+            }
+            if (bot.length <= 0 || player.length <= 0)
+                return false;
+
+            for (let i = 0; i < bot.length; i++) {
+                if (bot[i] !== player[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        $("#start").on("click", () => {
+            clearInterval(animateBoxes)
+            $(".box").css({'background-color':"wheat"})
+            if (startCheck == false) {
+                if (lightedBoxes.length >= 1) {
+                    clickedLightedBoxes = [];
+                }
+                for (var i = level > 1 ? level + 1 : 0; i < level + 2; i++) {
+                    let randomBoxes = Math.floor(Math.random() * boxCount);
+                    if (!lightedBoxes.includes(randomBoxes))
+                        lightedBoxes.push(randomBoxes)
+                    else
+                        i--;
+                }
+                let loop = setInterval(() => {
+                    if (StartPoint >= 1) {
+                        $($(".box")[lightedBoxes[StartPoint - 1]]).css({ 'background-color': "wheat", 'transition': "0.5s" })
+                    }
+                    $($(".box")[lightedBoxes[StartPoint]]).css({ 'background-color': "black", 'transition': "0.5s" })
+                    StartPoint++;
+                    if (lightedBoxes.length == StartPoint) {
+                        setTimeout(() => {
+                            $($(".box")[lightedBoxes[StartPoint - 1]]).css({ 'background-color': "wheat", 'transition': "0.5s" })
+                        }, 500)
+                        clearInterval(loop)
+                    }
+                }, 500)
+            }
+            startCheck = true;
+        })
+        $(".box").on("click", (e) => {
+            if (lightedBoxes.length > clickCount && StartPoint == (level + 2)) {
+                clickCount++;
+                clickedLightedBoxes.push(parseInt($(e.currentTarget).attr("data-number")))
+                setTimeout(() => {
+                    $(e.currentTarget).css({ 'background-color': "orange", 'transition': "0.5s" })
+                }, 100)
+            }
+        })
+        $("#check").on("click", () => {
+            if (LevelIsDone(lightedBoxes, clickedLightedBoxes)) {
+                level++;
+            }
+            else {
+                lightedBoxes = [];
+                level = 1;
+            }
+            StartPoint = 0;
+            startCheck = false;
+            clickCount = 0;
+            clickedLightedBoxes = [];
+            $(".box").css({ 'background-color': "wheat", 'transition': "0.5s" })
+            $("#level").html(level)
+        })
+
+    </script>
+}

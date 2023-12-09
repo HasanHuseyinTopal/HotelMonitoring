@@ -61,7 +61,18 @@
         <div class="d-flex">
             @for (int j = 0; j < 15; j++)
             {
-                <div class="blocks" style="width:180px; height:150px; border:10px solid silver; filter:blur(5px); opacity:0.2"></div>
+                if ((i + j) % 2 == 0 && (i + j) % 3 == 0)
+                {
+                    <div class="blocks" style="width:180px; height:150px; border:10px solid khaki; filter:blur(5px); opacity:0.2"></div>
+                }
+                else if ((i + j) % 3 == 0 || (i * j) % 5 == 0)
+                {
+                    <div class="blocks" style="width:180px; height:150px; border:10px solid white; filter:blur(5px); opacity:0.2"></div>
+                }
+                else
+                {
+                    <div class="blocks" style="width:180px; height:150px; border:10px solid silver; filter:blur(5px); opacity:0.2"></div>
+                }
             }
         </div>
     }
@@ -70,513 +81,45 @@
 <div class="d-flex">
 
     <div class="col-8 d-flex flex-column justify-content-center">
-        <div class="d-flex justify-content-evenly align-items-center my-2">
+        <div class="d-flex justify-content-evenly align-items-center mb-4 my-2">
             <div style="border-radius:20px;" class="shadow-sm px-5">
                 <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">@DateTime.Now.ToString("d MMMM") <span class="checkOut">@DateTime.Now.ToString("dddd")</span></span>
             </div>
         </div>
         <div class="d-flex container justify-content-center flex-column">
-            @*First Floor*@
-            <div class="d-flex justify-content-center">
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[101]=="black"?"yellow,yellow": Model.roomStates[101] == "red" ? "#820000,#B70404" : Model.roomStates[101] == "blue" ? "#202040,#00337C" : Model.roomStates[101] == "green" ? "#82CD47,#54B435" : Model.roomStates[101] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[101]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[101] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[101] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[101]== ""?"white,white":""))">
-                        <a class="R101  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="101">101</a>
-                        <div class="RoomCleanButton" id=101>
+            @for (int i = 0; i < 7; i++)
+            {
+                <div class="d-flex justify-content-center">
 
+                    @for (int j = 0; j < (i > 5 ? 2 : i > 3 ? 3 : 4); j++)
+                    {
+                        <div class="d-flex my-1 align-items-center">
+                            <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]]=="black"?"yellow,yellow": Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]] == "red" ? "#820000,#B70404" : Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]] == "blue" ? "#202040,#00337C" : Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]] == "green" ? "#82CD47,#54B435" : Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]]== ""?"white,white":""))">
+                                <a class="R-@Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)] fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="@Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]">@Model.roomNumbers[i * 4 + (i == 6 ? j - 2 : i == 5 ? j - 1 : j)]</a>
+                                <div class="RoomCleanButton" id=@Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]>
+
+                                </div>
+                                <img class="PaymentStatementImage" src="@(Model.paymentStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]].Contains("red") || Model.roomStates[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]].Contains("green"))==true?"1":"-1");" />
+                                <div class="position-relative d-flex">
+                                    @if (Model.VisitorTransferNext[Model.roomNumbers[i * 4 + (i == 6 ? j - 2 : i == 5 ? j - 1 : j)]] != 0)
+                                    {
+                                        <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]]"></div>
+                                    }
+                                    @if (Model.VisitorTransferPrevius[Model.roomNumbers[i * 4 + (i == 6 ? j - 2 : i == 5 ? j - 1 : j)]] != 0)
+                                    {
+                                        <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[Model.roomNumbers[i* 4+ (i==6 ? j -2 : i ==5 ? j-1: j)]]"></div>
+                                    }
+                                </div>
+                            </div>
                         </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[101] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[101].Contains("red") || Model.roomStates[101].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[101] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[101]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[101] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[101]"></div>
-                            }
-                        </div>
-                    </div>
+                    }
                 </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[102]=="black"?"yellow,yellow":Model.roomStates[102] == "red" ? "#820000,#B70404" : Model.roomStates[102] == "blue" ? "#202040,#00337C" : Model.roomStates[102] == "green" ? "#82CD47,#54B435" : Model.roomStates[102] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[102]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[102] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[102] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[102]== ""?"white,white":""))">
-                        <a class="R102  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="102">102</a>
-                        <div class="RoomCleanButton" id=102>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[102] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[102].Contains("red") || Model.roomStates[102].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[102] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[102]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[102] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[102]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[103]=="black"?"yellow,yellow":Model.roomStates[103] == "red" ? "#820000,#B70404" : Model.roomStates[103] == "blue" ? "#202040,#00337C" : Model.roomStates[103] == "green" ? "#82CD47,#54B435" : Model.roomStates[103] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[103]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[103] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[103] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[103]== ""?"white,white":""))">
-                        <a class="R103  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="103">103</a>
-                        <div class="RoomCleanButton" id=103>
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[103] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[103].Contains("red") || Model.roomStates[103].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[103] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[103]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[103] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[103]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[104]=="black"?"yellow,yellow":Model.roomStates[104] == "red" ? "#820000,#B70404" : Model.roomStates[104] == "blue" ? "#202040,#00337C" : Model.roomStates[104] == "green" ? "#82CD47,#54B435" : Model.roomStates[104] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[104]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[104] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[104] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[104]== ""?"white,white":""))">
-                        <a class="R104  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="104">104</a>
-                        <div class="RoomCleanButton" id=104>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[104] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[104].Contains("red") || Model.roomStates[104].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[104] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[104]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[104] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[104]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @*Second Floor*@
-            <div class="d-flex justify-content-center">
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[201]=="black"?"yellow,yellow":Model.roomStates[201] == "red" ? "#820000,#B70404" : Model.roomStates[201] == "blue" ? "#202040,#00337C" : Model.roomStates[201] == "green" ? "#82CD47,#54B435" : Model.roomStates[201] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[201]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[201] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[201] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[201]== ""?"white,white":""))">
-                        <a class="R201  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="201">201</a>
-                        <div class="RoomCleanButton" id=201>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[201] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[201].Contains("red") || Model.roomStates[201].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[201] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[201]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[201] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[201]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[202]=="black"?"yellow,yellow":Model.roomStates[202] == "red" ? "#820000,#B70404" : Model.roomStates[202] == "blue" ? "#202040,#00337C" : Model.roomStates[202] == "green" ? "#82CD47,#54B435" : Model.roomStates[202] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[202]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[202] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[202] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[202]== ""?"white,white":""))">
-                        <a class="R202  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="202">202</a>
-                        <div class="RoomCleanButton" id=202>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[202] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[202].Contains("red") || Model.roomStates[202].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[202] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[202]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[202] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[202]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[203]=="black"?"yellow,yellow":Model.roomStates[203] == "red" ? "#820000,#B70404" : Model.roomStates[203] == "blue" ? "#202040,#00337C" : Model.roomStates[203] == "green" ? "#82CD47,#54B435" : Model.roomStates[203] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[203]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[203] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[203] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[203]== ""?"white,white":""))">
-                        <a class="R203  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="203">203</a>
-                        <div class="RoomCleanButton" id=203>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[203] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[203].Contains("red") || Model.roomStates[203].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[203] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[203]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[203] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[203]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[204]=="black"?"yellow,yellow":Model.roomStates[204] == "red" ? "#820000,#B70404" : Model.roomStates[204] == "blue" ? "#202040,#00337C" : Model.roomStates[204] == "green" ? "#82CD47,#54B435" : Model.roomStates[204] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[204]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[204] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[204] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[204]== ""?"white,white":""))">
-                        <a class="R204  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="204">204</a>
-                        <div class="RoomCleanButton" id=204>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[204] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[204].Contains("red") || Model.roomStates[204].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[204] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[204]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[204] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[204]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @*Third Floor*@
-            <div class="d-flex justify-content-center">
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[301]=="black"?"yellow,yellow":Model.roomStates[301] == "red" ? "#820000,#B70404" : Model.roomStates[301] == "blue" ? "#202040,#00337C" : Model.roomStates[301] == "green" ? "#82CD47,#54B435" : Model.roomStates[301] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[301]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[301] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[301] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[301]== ""?"white,white":""))">
-                        <a class="R301  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="301">301</a>
-                        <div class="RoomCleanButton" id=301>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[301] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[301].Contains("red") || Model.roomStates[301].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[301] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[301]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[301] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[301]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[302]=="black"?"yellow,yellow":Model.roomStates[302] == "red" ? "#820000,#B70404" : Model.roomStates[302] == "blue" ? "#202040,#00337C" : Model.roomStates[302] == "green" ? "#82CD47,#54B435" : Model.roomStates[302] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[302]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[302] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[302] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[302]== ""?"white,white":""))">
-                        <a class="R302  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="302">302</a>
-                        <div class="RoomCleanButton" id=302>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[302] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[302].Contains("red") || Model.roomStates[302].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[302] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[302]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[302] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[302]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[303]=="black"?"yellow,yellow":Model.roomStates[303] == "red" ? "#820000,#B70404" : Model.roomStates[303] == "blue" ? "#202040,#00337C" : Model.roomStates[303] == "green" ? "#82CD47,#54B435" : Model.roomStates[303] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[303]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[303] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[303] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[303]== ""?"white,white":""))">
-                        <a class="R303  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="303">303</a>
-                        <div class="RoomCleanButton" id=303>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[303] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[303].Contains("red") || Model.roomStates[303].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[303] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[303]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[303] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[303]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[304]=="black"?"yellow,yellow":Model.roomStates[304] == "red" ? "#820000,#B70404" : Model.roomStates[304] == "blue" ? "#202040,#00337C" : Model.roomStates[304] == "green" ? "#82CD47,#54B435" : Model.roomStates[304] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[304]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[304] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[304] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[304]== ""?"white,white":""))">
-                        <a class="R304  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="304">304</a>
-                        <div class="RoomCleanButton" id=304>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[304] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[304].Contains("red") || Model.roomStates[304].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[304] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[304]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[304] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[304]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @*Fourth Floor*@
-            <div class="d-flex justify-content-center">
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[401]=="black"?"yellow,yellow":Model.roomStates[401] == "red" ? "#820000,#B70404" : Model.roomStates[401] == "blue" ? "#202040,#00337C" : Model.roomStates[401] == "green" ? "#82CD47,#54B435" : Model.roomStates[401] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[401]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[401] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[401] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[401]== ""?"white,white":""))">
-                        <a class="R401  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="401">401</a>
-                        <div class="RoomCleanButton" id=401>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[401] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[401].Contains("red") || Model.roomStates[401].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[401] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[401]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[401] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[401]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[402]=="black"?"yellow,yellow":Model.roomStates[402] == "red" ? "#820000,#B70404" : Model.roomStates[402] == "blue" ? "#202040,#00337C" : Model.roomStates[402] == "green" ? "#82CD47,#54B435" : Model.roomStates[402] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[402]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[402] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[402] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[402]== ""?"white,white":""))">
-                        <a class="R402 fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="402">402</a>
-                        <div class="RoomCleanButton" id=402>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[402] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[402].Contains("red") || Model.roomStates[402].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[402] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[402]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[402] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[402]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[403]=="black"?"yellow,yellow":Model.roomStates[403] == "red" ? "#820000,#B70404" : Model.roomStates[403] == "blue" ? "#202040,#00337C" : Model.roomStates[403] == "green" ? "#82CD47,#54B435" : Model.roomStates[403] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[403]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[403] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[403] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[403]== ""?"white,white":""))">
-                        <a class="R403 fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="403">403</a>
-                        <div class="RoomCleanButton" id=403>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[403] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[403].Contains("red") || Model.roomStates[403].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[403] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[403]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[403] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[403]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[404]=="black"?"yellow,yellow":Model.roomStates[404] == "red" ? "#820000,#B70404" : Model.roomStates[404] == "blue" ? "#202040,#00337C" : Model.roomStates[404] == "green" ? "#82CD47,#54B435" : Model.roomStates[404] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[404]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[404] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[404] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[404]== ""?"white,white":""))">
-                        <a class="R404  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="404">404</a>
-                        <div class="RoomCleanButton" id=404>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[404] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[404].Contains("red") || Model.roomStates[404].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[404] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[404]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[404] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[404]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @*Fifth Floor*@
-            <div class="d-flex justify-content-center">
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[501]=="black"?"yellow,yellow":Model.roomStates[501] == "red" ? "#820000,#B70404" : Model.roomStates[501] == "blue" ? "#202040,#00337C" : Model.roomStates[501] == "green" ? "#82CD47,#54B435" : Model.roomStates[501] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[501]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[501] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[501] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[501]== ""?"white,white":""))">
-                        <a class="R501 fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="501">501</a>
-                        <div class="RoomCleanButton" id=501>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[501] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[501].Contains("red") || Model.roomStates[501].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[501] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[501]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[501] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[501]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[502]=="black"?"yellow,yellow":Model.roomStates[502] == "red" ? "#820000,#B70404" : Model.roomStates[502] == "blue" ? "#202040,#00337C" : Model.roomStates[502] == "green" ? "#82CD47,#54B435" : Model.roomStates[502] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[502]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[502] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[502] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[502]== ""?"white,white":""))">
-                        <a class="R502  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="502">502</a>
-                        <div class="RoomCleanButton" id=502>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[502] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[502].Contains("red") || Model.roomStates[502].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[502] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[502]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[502] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[502]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[503]=="black"?"yellow,yellow":Model.roomStates[503] == "red" ? "#820000,#B70404" : Model.roomStates[503] == "blue" ? "#202040,#00337C" : Model.roomStates[503] == "green" ? "#82CD47,#54B435" : Model.roomStates[503] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[503]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[503] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[503] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[503]== ""?"white,white":""))">
-                        <a class="R503  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="503">503</a>
-                        <div class="RoomCleanButton" id=503>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[503] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[503].Contains("red") || Model.roomStates[503].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[503] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[503]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[503] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[503]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            @*Sixth Floor*@
-            <div class="d-flex justify-content-center">
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[601]=="black"?"yellow,yellow":Model.roomStates[601] == "red" ? "#820000,#B70404" : Model.roomStates[601] == "blue" ? "#202040,#00337C" : Model.roomStates[601] == "green" ? "#82CD47,#54B435" : Model.roomStates[601] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[601]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[601] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[601] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[601]== ""?"white,white":""))">
-                        <a class="R601  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="601">601</a>
-                        <div class="RoomCleanButton" id=601>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[601] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[601].Contains("red") || Model.roomStates[601].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[601] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[601]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[601] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[601]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[602]=="black"?"yellow,yellow":Model.roomStates[602] == "red" ? "#820000,#B70404" : Model.roomStates[602] == "blue" ? "#202040,#00337C" : Model.roomStates[602] == "green" ? "#82CD47,#54B435" : Model.roomStates[602] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[602]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[602] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[602] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[602]== ""?"white,white":""))">
-                        <a class="R602  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="602">602</a>
-                        <div class="RoomCleanButton" id=602>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[602] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[602].Contains("red") || Model.roomStates[602].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[602] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[602]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[602] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[602]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[603]=="black"?"yellow,yellow":Model.roomStates[603] == "red" ? "#820000,#B70404" : Model.roomStates[603] == "blue" ? "#202040,#00337C" : Model.roomStates[603] == "green" ? "#82CD47,#54B435" : Model.roomStates[603] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[603]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[603] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[603] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[603]== ""?"white,white":""))">
-                        <a class="R603  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="603">603</a>
-                        <div class="RoomCleanButton" id=603>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[603] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[603].Contains("red") || Model.roomStates[603].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[603] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[603]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[603] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[603]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            @*Seventh Floor*@
-            <div class="d-flex justify-content-center">
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[701]=="black"?"yellow,yellow":Model.roomStates[701] == "red" ? "#820000,#B70404" : Model.roomStates[701] == "blue" ? "#202040,#00337C" : Model.roomStates[701] == "green" ? "#82CD47,#54B435" : Model.roomStates[701] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[701]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[701] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[701] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[701]== ""?"white,white":""))">
-                        <a class="R701  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="701">701</a>
-                        <div class="RoomCleanButton" id=701>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[701] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[701].Contains("red") || Model.roomStates[701].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[701] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[701]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[701] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[701]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div id="RoomStlye" class="RoomStlye" style="background-image:linear-gradient(@(Model.roomStates[702]=="black"?"yellow,yellow":Model.roomStates[702] == "red" ? "#820000,#B70404" : Model.roomStates[702] == "blue" ? "#202040,#00337C" : Model.roomStates[702] == "green" ? "#82CD47,#54B435" : Model.roomStates[702] == "bluered" ? "45deg,#202040, #00337C 50%, #820000 50%, #B70404 100%" : Model.roomStates[702]=="bluegreen" ? "45deg,#202040, #00337C 50%, #54B435 50%, #82CD47 100%" : Model.roomStates[702] == "greenred" ? "45deg,#54B435, #82CD47 50%, #820000 50%, #B70404 100%" : Model.roomStates[702] == "bluegreenred" ? "45deg,#202040,#00337C 33%,#54B435 33%, #82CD47 66%, #820000 66%, #B70404 100%" : Model.roomStates[702]== ""?"white,white":""))">
-                        <a class="R702  fs-1" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-roomNumber="702">702</a>
-                        <div class="RoomCleanButton" id=702>
-
-                        </div>
-                        <img class="PaymentStatementImage" src="@(Model.paymentStates[702] == false ? "./Images/cross.jpg":"./Images/thick.jpg")" style="z-index:@((Model.roomStates[702].Contains("red") || Model.roomStates[702].Contains("green"))==true?"1":"-1");" />
-                        <div class="position-relative d-flex">
-                            @if (Model.VisitorTransferNext[702] != 0)
-                            {
-                                <div class="VisitorNextState" data-Next="@Model.VisitorTransferNext[702]"></div>
-                            }
-                            @if (Model.VisitorTransferPrevius[702] != 0)
-                            {
-                                <div class="VisitorPreviusState" data-Previus="@Model.VisitorTransferPrevius[702]"></div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            }
         </div>
     </div>
     <div class="position-relative col-4 justify-content-center my-5 pt-3" style="right:100px;">
-        <div class="d-flex border border-5 border-dark flex-column position-relative align-items-center rounded-3 p-4" style="margin: 30px 50px; top: 40px;  box-shadow: 3px 3px 4px black,-2px -2px 4px silver ">
-            <div class="d-flex mb-5 position-relative" style="left:20px;">
+        <div class="d-flex flex-column position-relative align-items-center rounded-3 p-3" style=" margin: 30px 50px; top: 45px; box-shadow: 2px 2px 4px black,-2px -2px 4px silver, 0 0 5px silver, 0 0 10px grey ">
+            <div class="d-flex mt-5  position-relative" style="margin-bottom:70px; left:15px;">
                 <div class="d-flex justify-content-start flex-column">
                     <span class="fs-3 fw-bolder">Giriş </span>
                     <hr />
@@ -628,7 +171,11 @@
                     Giriş
                 </a>
             </div>
-            <div class="d-flex justify-content-center rounded-3 shadow-lg fs-4 align-items-center m-1 text-white" style="height: 100px; width: 50%; background-image: linear-gradient(#54B435,#82CD47) ">Otelde</div>
+            <div class="d-flex justify-content-center rounded-3 shadow-lg fs-4 align-items-center m-1 text-white" style="height: 100px; width: 50%; background-image: linear-gradient(#54B435,#82CD47) ">
+                <a style="color:white; width:100%; text-align:center;" asp-controller="Visitor" asp-action="AllStayInVisitors">
+                    Otelde
+                </a>
+            </div>
 
             <div class="d-flex justify-content-center rounded-3 shadow-lg fs-4 align-items-center m-1 mb-5 text-white" style="height: 100px; width: 50%; background-image: linear-gradient(#820000,#B70404) ">
                 <a style="color:white; width:100%; text-align:center;" asp-controller="Visitor" asp-action="AllCheckOutVisitors">
@@ -656,7 +203,7 @@
         //}, 4000)
         let nextCss = {
             color: "wheat",
-            "text-shadow": "2px 2px 2px black,-2px 2px 2px black,2px -2px 2px silver,-2px -2px silver,0 0 10px wheat,0 0 12px wheat, 0 0 14px wheat, 0 0 16px yellow, 0 0 18px orange, 0 0 20px orange,0 0 22px wheat"
+            "text-shadow": "2px 2px 2px black,-2px 2px 2px black,2px -2px 2px silver,-2px -2px silver,0 0 10px wheat,0 0 12px wheat, 0 0 14px wheat"
         }
         let previusCss = {
             color: "silver",
@@ -666,21 +213,21 @@
         $(".VisitorNextState").on("mouseover", (e) => {
             let value = $(e.currentTarget).attr("data-Next");
             console.log(value)
-            $(`.R${value}`).css(nextCss)
+            $(`.R-${value}`).css(nextCss)
         })
         $(".VisitorNextState").on("mouseleave", (e) => {
             let value = $(e.currentTarget).attr("data-Next");
-            $(`.R${value}`).css(previusCss)
+            $(`.R-${value}`).css(previusCss)
         })
 
         $(".VisitorPreviusState").on("mouseover", (e) => {
             let value = $(e.currentTarget).attr("data-Previus");
             console.log(value)
-            $(`.R${value}`).css(nextCss)
+            $(`.R-${value}`).css(nextCss)
         })
         $(".VisitorPreviusState").on("mouseleave", (e) => {
             let value = $(e.currentTarget).attr("data-Previus");
-            $(`.R${value}`).css(previusCss)
+            $(`.R-${value}`).css(previusCss)
         })
 
         setInterval(() => {

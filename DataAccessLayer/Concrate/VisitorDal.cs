@@ -33,6 +33,10 @@ namespace DataAccessLayer.Concrate
         {
             return _cpContext.Visitors.Include(x => x.VisitorProperties).FirstOrDefault(filter);
         }
+        public Visitor GetOneWithPropertiesAndHistories(Expression<Func<Visitor, bool>> filter = null)
+        {
+            return _cpContext.Visitors.Include(x => x.VisitorProperties).Include(x=> x.VisitorHistories).FirstOrDefault(filter);
+        }
         public void GetChangedVisitorProperties(int VisitorId, UpdateVisitorDTO UpdatedVisitor)
         {
             var history = new VisitorHistory();

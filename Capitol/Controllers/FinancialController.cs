@@ -2,11 +2,12 @@
 using DataAccessLayer.Abstract;
 using EntityLayer.DTOs;
 using EntityLayer.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
 
 namespace Capitol.Controllers
 {
+    [Authorize(Policy = "ADMN")]
     public class FinancialController : Controller
     {
         IUnitOfWorkDal _unitOfWork;
@@ -36,7 +37,7 @@ namespace Capitol.Controllers
         [HttpGet]
         public IActionResult DeleteFinancial(int FinancialId)
         {
-            string previusUrl = HttpContext.Request.Headers["Referer"];
+            string previusUrl = HttpContext.Request.Headers["Referer"]!;
 
             var delete = _unitOfWork.financialDal.GetOne(x => x.FinancialId == FinancialId);
             if (delete != null)
@@ -62,7 +63,7 @@ namespace Capitol.Controllers
         [HttpPost]
         public IActionResult UpdateFinancial(FinancialManagement financialManagement)
         {
-            string previusUrl = HttpContext.Request.Headers["Referer"];
+            string previusUrl = HttpContext.Request.Headers["Referer"]!;
             financialManagement.FinancialUpdateCount += 1;
             _unitOfWork.financialDal.Update(financialManagement);
             _unitOfWork.Save();
@@ -75,40 +76,42 @@ namespace Capitol.Controllers
             result.DailyEncrytpon = Guid.NewGuid();
             result.DayNumber = DayNumber;
             result.FinancialManagements = new();
-            var payments = _unitOfWork.paymentDal.GetAll();
+            var payments = _unitOfWork.paymentDal.GetAll(x => x.VisitorPaymentDate >= DateTime.Now.AddDays(DayNumber - 1).Date && x.VisitorPaymentDate <= DateTime.Now.AddDays(DayNumber + 1).Date);
+            var time = DateTime.Now.Date.AddDays(DayNumber).AddHours(12);
             var finances = _unitOfWork.financialDal.GetAll();
             foreach (var finance in finances)
             {
-                if (finance.FinancialDate >= DateTime.Now.Date.AddDays(DayNumber).AddHours(12) && finance.FinancialDate <= DateTime.Now.Date.AddDays(DayNumber + 1).AddHours(12))
+                if (finance.FinancialDate >= DateTime.Now.Date.AddDays(DayNumber) && finance.FinancialDate <= DateTime.Now.Date.AddDays(DayNumber + 1))
                 {
                     result.FinancialManagements.Add(finance);
                 }
             }
             foreach (var payment in payments)
             {
-                if (payment.VisitorPaymentDate >= DateTime.Now.Date.AddDays(DayNumber).AddHours(12) && payment.VisitorPaymentDate <= DateTime.Now.Date.AddDays(DayNumber + 1).AddHours(12))
+                if (payment.VisitorPaymentDate!.Value.Date == DateTime.Now.Date.AddDays(DayNumber))
                 {
-                    if (payment.VisitorPaymentType.Value.ToString() == "Nakit" && payment.VisitorPaymentCurreny.Value.ToString() == "TL")
+
+                    if (payment.VisitorPaymentType!.Value.ToString() == "Nakit" && payment.VisitorPaymentCurreny!.Value.ToString() == "TL")
                     {
                         result.TotalCashTL += payment.VisitorPayment;
                     }
-                    else if (payment.VisitorPaymentType.Value.ToString() == "Nakit" && payment.VisitorPaymentCurreny.Value.ToString() == "EURO")
+                    else if (payment.VisitorPaymentType.Value.ToString() == "Nakit" && payment.VisitorPaymentCurreny!.Value.ToString() == "EURO")
                     {
                         result.TotalCashEURO += payment.VisitorPayment;
                     }
-                    else if (payment.VisitorPaymentType.Value.ToString() == "Nakit" && payment.VisitorPaymentCurreny.Value.ToString() == "USD")
+                    else if (payment.VisitorPaymentType.Value.ToString() == "Nakit" && payment.VisitorPaymentCurreny!.Value.ToString() == "USD")
                     {
                         result.TotalCashUSD += payment.VisitorPayment;
                     }
-                    else if (payment.VisitorPaymentType.Value.ToString() == "KrediKartı" && payment.VisitorPaymentCurreny.Value.ToString() == "TL")
+                    else if (payment.VisitorPaymentType.Value.ToString() == "KrediKartı" && payment.VisitorPaymentCurreny!.Value.ToString() == "TL")
                     {
                         result.TotalKreditTL += payment.VisitorPayment;
                     }
-                    else if (payment.VisitorPaymentType.Value.ToString() == "KrediKartı" && payment.VisitorPaymentCurreny.Value.ToString() == "EURO")
+                    else if (payment.VisitorPaymentType.Value.ToString() == "KrediKartı" && payment.VisitorPaymentCurreny!.Value.ToString() == "EURO")
                     {
                         result.TotalKreditEURO += payment.VisitorPayment;
                     }
-                    else if (payment.VisitorPaymentType.Value.ToString() == "KrediKartı" && payment.VisitorPaymentCurreny.Value.ToString() == "USD")
+                    else if (payment.VisitorPaymentType.Value.ToString() == "KrediKartı" && payment.VisitorPaymentCurreny!.Value.ToString() == "USD")
                     {
                         result.TotalKreditUSD += payment.VisitorPayment;
                     }

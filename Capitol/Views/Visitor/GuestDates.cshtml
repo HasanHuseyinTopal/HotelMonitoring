@@ -1,5 +1,10 @@
 ﻿@model List<Visitor>
 
+    <div class="d-flex justify-content-evenly align-items-center my-2">
+        <div style="border-radius:20px;" class="shadow-sm px-5">
+            <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">Son Eklenenler</span>
+        </div>
+    </div>
 <div class="container mt-5">
     <table class="table table-hover">
         <tr>
@@ -17,7 +22,7 @@
                 <td>@(i + 1)</td>
                 <td>@Model[i].VisitorProperties[0].VisitorName</td>
                 <td>@Model[i].VisitorProperties[0].VisitorSurName</td>
-                <td>@Model[i].VisitorRezervation</td>
+                <td>@Model[i].Agency?.AgencyName</td>
                 <td>@Model[i].VisitorAddedDate?.ToString("f")</td>
                 <td>
                     @if (Model[i].VisitorAddedDate?.Hour >= 8 && Model[i].VisitorAddedDate?.Hour <= 14)

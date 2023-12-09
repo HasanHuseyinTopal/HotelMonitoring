@@ -7,6 +7,9 @@ input {
 select {
     padding: 10px !important;
 }
+body{
+    
+}
 
 #symbol span {
     position: absolute;
@@ -38,34 +41,32 @@ select {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: xx-large;
     height: 60px;
     width: 200px;
-    border: 4px solid black;
-    box-shadow: 4px 4px 4px black,-2px -2px 4px silver;
+    border: 2px solid black;
+    box-shadow: 2px 2px 4px black,-2px -2px 4px silver, 0 0 5px silver, 0 0 10px silver, 0 0 15px silver, 0 0 20px grey;
     margin: 20px 20px;
-    border-radius: 5px;
+    border-radius: 4px;
     position: relative;
-    transition: 0.1s;
 }
 
     #RoomStlye a {
         text-shadow: 2px 2px 2px black,-2px 2px 2px black,2px -2px 2px silver,-2px -2px silver;
         letter-spacing: 5px;
         color: silver;
-        transition: 0.1s;
+        transition: 0.2s;
     }
 
         #RoomStlye a:hover {
             color: wheat !important;
-            text-shadow: 2px 2px 2px black,-2px 2px 2px black,2px -2px 2px silver,-2px -2px silver,0 0 10px wheat,0 0 12px wheat, 0 0 14px wheat, 0 0 16px yellow, 0 0 18px orange, 0 0 20px orange,0 0 22px wheat !important;
-            transition: 0.1s;
+            text-shadow: 2px 2px 2px black,-2px 2px 2px black,2px -2px 2px silver,-2px -2px silver,0 0 10px wheat,0 0 12px wheat, 0 0 14px wheat !important;
+            transition: 0.2s;
         }
 
 .PaymentStatementImage {
     position: absolute;
     left: 6px;
-    top: 5px;
+    top: 8px;
     height: 40px;
     width: 40px;
     border: 2px solid black;

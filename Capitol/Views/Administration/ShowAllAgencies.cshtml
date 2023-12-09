@@ -1,0 +1,73 @@
+﻿@model List<Agency>
+
+
+<div class="d-flex justify-content-evenly align-items-center my-2">
+    <div style="border-radius:20px;" class="shadow-sm px-5">
+        <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">Acenta Listesi</span>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="container d-flex justify-content-center align-items-center row mt-5">
+        <table class="table table-bordered table-hover border border-3 border-dark shadow">
+            <thead>
+                <tr>
+                    <th>Acenta İsmi</th>
+                    <th>Güncelle</th>
+                    <th>Durum</th>
+                    <th>Sil</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var agency in Model)
+                {
+                    <tr>
+                        <td>@agency.AgencyName</td>
+                        <td><a class="btn btn-warning text-white" asp-controller="Administration" asp-action="UpdateAgency" asp-route-AgencyId="@agency.AgencyId">Güncelle</a></td>
+                        @if (agency.AgencyStatus == true)
+                        {
+                            <td><a class="btn btn-primary text-white" asp-controller="Administration" asp-action="ChangeAgencyStatus" asp-route-AgencyId="@agency.AgencyId">Aktif</a></td>
+                        }
+                        else
+                        {
+                            <td><a class="btn btn-danger text-white" asp-controller="Administration" asp-action="ChangeAgencyStatus" asp-route-AgencyId="@agency.AgencyId">Pasif</a></td>
+                        }
+                        <td><a class="btn btn-dark text-white Delete" asp-controller="Administration" asp-action="DeleteAgency" asp-route-AgencyId="@agency.AgencyId">Sil</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-start">
+            <a class="btn btn-primary px-3 btn-lg" asp-controller="Administration" asp-action="AddAgency">Yeni Acenta Ekle</a>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $(".Delete").on("click", (e) => {
+            e.preventDefault();
+            let url = e.currentTarget.getAttribute('href')
+            Swal.fire({
+                title: 'Eminmisin?',
+                text: "Bunu geri alamazsın!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, Sil',
+                cancelButtonText: 'İptal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Silindi!',
+                        '',
+                        'success',
+                        setTimeout(() => {
+                            window.location.href = url
+                        }, 500)
+                    )
+                }
+            })
+        })
+    </script>
+}

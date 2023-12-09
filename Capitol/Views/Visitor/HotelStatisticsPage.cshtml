@@ -1,0 +1,89 @@
+﻿
+<style>
+    #MainChart {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 200px;
+    }
+</style>
+
+
+<div class="d-flex justify-content-center">
+    <div class="position-absolute d-flex shadow-sm px-5 align-items-center justify-content-center" style="top: 100px; border-radius: 20px;">
+        <span class="text-black year" style=" font-weight:600; font-size:50px;"></span> <span style="margin:0 15px; font-weight:600; font-size:50px; color:darkred;"> - </span><span class="text-black month" style=" font-weight:600; font-size:50px;"></span>
+    </div>
+</div>
+
+
+<div class="d-flex justify-content-center">
+    <div class="d-flex">
+        <div class="d-flex align-items-center" style="margin-top:200px;">
+            <a id="previus" class="bnptn-arrow bnptn-arrow-left" title="previus"></a>
+        </div>
+        <div id="MainChart">
+            <div style="width:600px;">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+        <div class="d-flex align-items-center" style="margin-top:200px;">
+            <a id="next" class="bnptn-arrow bnptn-arrow-right" title="Next"></a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const ctx = document.getElementById('myChart');
+
+        async function FetchApi(url) {
+            let data = await fetch(url).then(data => data.json())
+            return data;
+        }
+        let currentMonthNumber = 0;
+        var newChart;
+        function GetStatistics(monthNumber) {
+            FetchApi("https://localhost:7121/Visitor/HotelStatistics?monthNumber=" + monthNumber).then(datas => {
+                var date = new Date();
+                date.setMonth(date.getMonth() + monthNumber);
+                var newYear = date.getFullYear()
+                var newMonth = date.toLocaleString('default', { month: 'long' });
+                $(".year").html(newYear)
+                $(".month").html(newMonth)
+
+                newChart=new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(datas.rezervationCounts),
+                        datasets: [{
+                            label: '#Ziyaretçi Sayısı',
+                            data: Object.values(datas.rezervationCounts),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+        }
+
+        GetStatistics(0);
+
+        $("#next").on("click", () => {
+            newChart.destroy();
+            currentMonthNumber += 1;
+            GetStatistics(currentMonthNumber);
+        })
+        $("#previus").on("click", () => {
+            newChart.destroy();
+            currentMonthNumber -= 1;
+            GetStatistics(currentMonthNumber);
+        })
+    </script>
+
+}

@@ -8,11 +8,13 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     #CheckOutVisitorCountElement {
         background: -webkit-linear-gradient(#B70404,#820000);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     #CheckInRoomCountElement {
         background: -webkit-linear-gradient(#B70404,#820000);
         -webkit-background-clip: text;
@@ -23,6 +25,65 @@
         background: -webkit-linear-gradient(#B70404,#820000);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+
+    .Waiter{
+        position:relative;
+        top:100px;
+    }
+    .wave {
+        width: 5px;
+        height: 100px;
+        background: linear-gradient(45deg, cyan, #fff);
+        margin: 10px;
+        animation: wave 1s linear infinite;
+        border-radius: 20px;
+    }
+
+        .wave:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .wave:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .wave:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .wave:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        .wave:nth-child(6) {
+            animation-delay: 0.5s;
+        }
+
+        .wave:nth-child(7) {
+            animation-delay: 0.6s;
+        }
+
+        .wave:nth-child(8) {
+            animation-delay: 0.7s;
+        }
+
+        .wave:nth-child(9) {
+            animation-delay: 0.8s;
+        }
+
+        .wave:nth-child(10) {
+            animation-delay: 0.9s;
+        }
+
+    @@keyframes wave {
+        0% {
+            transform: scale(0);
+        }
+
+        50% {
+            transform: scale(1);
+        }
     }
 </style>
 
@@ -38,7 +99,7 @@
     </div>
 </div>
 <div class="d-flex justify-content-center  m-5">
-    <div class="form col-6 mt-5">
+    <div class="form col-8 mt-5">
         <div class="column mt-5">
             <div class="input-box  d-flex row m-2">
                 <label>Adı</label>
@@ -59,7 +120,7 @@
             <div class="input-box d-flex row m-2">
                 <label>Oda Numarası</label>
                 <select id="VisitorRoomNumber">
-                    <option selected disabled hidden>Oda Numarası</option>
+                    <option value="opt1" selected disabled hidden>Oda Numarası</option>
                     <option>101</option>
                     <option>102</option>
                     <option>103</option>
@@ -86,13 +147,15 @@
                     <option>702</option>
                 </select>
             </div>
+            <div class="input-box d-flex pt-4 row m-2 align-items-center" style="width:20%;">
+                <div class="roomNumberCleaner" style="width:30px; height:30px; border-radius:20px; transition:0.2s; background-color:darkred; opacity:0.2;"></div>
+            </div>
         </div>
     </div>
 </div>
 <div class="d-flex justify-content-center">
     <a><div id="VisitorButton" class="v3Search m-3">Ziyaretci Ara</div></a>
 </div>
-
 
 <div class="d-flex container justify-content-center align-items-center">
     <table class="table table-bordered table-hover border border-3 border-dark shadow">
@@ -113,24 +176,51 @@
     </table>
 </div>
 
+<div class="d-flex Waiter justify-content-center">
+    <div class="d-flex bg-dark justify-content-center align-items-center" style="width:20%; border-radius:200px;">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
 
+</div>
+
+<div class="position-absolute d-none d-flex justify-content-center p-1 pageContainer" style="right:100px; top:443px;">
+    <div class="mx-5 shadow-sm" style="border-radius:5px;">
+        <h1 class="px-2 pageShower">1</h1>
+    </div>
+    <select class="Pages">
+        <option selected hidden disabled>Sayfa Seçiniz</option>
+    </select>
+</div>
 
 @section Scripts{
     <script>
-
+        $(".roomNumberCleaner").on("click", () => {
+            $("#VisitorRoomNumber").val("opt1");
+        })
+        let obj = {
+            VisitorName: "",
+            VisitorSurName: "",
+            VisitorStartDate: Date,
+            VisitorEndDate: Date,
+            VisitorRoomNumber: 0,
+            PageNumber: 0
+        }
         $("#VisitorButton").on("click", () => {
-            let obj = {
-                VisitorName: "",
-                VisitorSurName: "",
-                VisitorStartDate: Date,
-                VisitorEndDate: Date,
-                VisitorRoomNumber: 0
-            }
             obj.VisitorName = $("#VisitorName").val();
             obj.VisitorSurName = $("#VisitorSurName").val();
             obj.VisitorStartDate = $("#VisitorStartDate").val();
             obj.VisitorEndDate = $("#VisitorEndDate").val();
             obj.VisitorRoomNumber = $("#VisitorRoomNumber").val();
+            obj.PageNumber = $(".Pages").val() > 1 ? $(".Pages").val() : 1;
 
             if (obj.VisitorEndDate == "") {
                 obj.VisitorEndDate = null;
@@ -138,7 +228,7 @@
             if (obj.VisitorStartDate == "") {
                 obj.VisitorStartDate = null;
             }
-
+            $(".Waiter").addClass("d-none");
             fetch("https://localhost:7121/Visitor/VisitorSearch", {
                 method: "POST",
                 mode: "cors",
@@ -154,21 +244,31 @@
                 var result = "";
                 let checkOutRoomCount = [];
                 let VisitorCount = 0;
-                data.forEach(element => {
+                data.Visitors.forEach(element => {
                     checkOutRoomCount.push(element.VisitorRoomNumber);
                     VisitorCount += element.VisitorCount;
                     result += `<tr>
-                                        <td>${element.VisitorName}</td >
-                                        <td>${element.VisitorSurName}</td >
-                                        <td>${element.VisitorRezervation}</td >
-                                        <td>${element.VisitorRoomNumber}</td >
-                                        <td>${element.VisitorStartDate}</td >
-                                        <td>${element.VisitorEndDate}</td >
-                                        <td>${element.VisitorRoomPrice.toString().substring(0, 5)} ${element.VisitorPaymentCurrency}</td>
-                                        <td><a class="btn btn-dark text-white" href="https://localhost:7121/Visitor/SelectedVisitors?VisitorId=${element.VisitorId}">Detay</a></td>
-                                      </tr>`
+                                                                <td>${element.VisitorName}</td >
+                                                                <td>${element.VisitorSurName}</td >
+                                                                <td>${element.VisitorRezervation}</td >
+                                                                <td>${element.VisitorRoomNumber}</td >
+                                                                <td>${element.VisitorStartDate}</td >
+                                                                <td>${element.VisitorEndDate}</td >
+                                                                <td>${element.VisitorRoomPrice.toString().substring(0, 5)} ${element.VisitorPaymentCurrency}</td>
+                                                                <td><a class="btn btn-dark text-white" href="https://localhost:7121/Visitor/SelectedVisitors?VisitorId=${element.VisitorId}">Detay</a></td>
+                                                              </tr>`
                 });
-                console.log(obj)
+
+                let pageSpan = "";
+                for (var i = 1; i <= Math.ceil(data.TotalCount / 25); i++) {
+                    pageSpan += `<option value="${i}">${i}</option>`
+                }
+                if (pageSpan != "") {
+                    $(".pageContainer").removeClass("d-none");
+                    $(".Pages").html(" <option selected hidden disabled>Sayfa Seçiniz</option>");
+                    $(".pageShower").html(obj.PageNumber)
+                    $(".Pages").append(pageSpan);
+                }
                 if (obj.VisitorStartDate == null && obj.VisitorName == "" && obj.VisitorSurName == "" && obj.VisitorRoomNumber == null && obj.VisitorEndDate != null) {
                     $(".checkInContainer").addClass("d-none")
                     $(".checkOutContainer").removeClass("d-none")

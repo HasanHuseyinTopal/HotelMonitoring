@@ -11,7 +11,8 @@ namespace EntityLayer.Entities
     {
         [Key]
         public int AgencyId { get; set; }
-        public int AgencyOrderNumber { get; set; }
+        [MaxLength(12)]
         public string AgencyName { get; set; }
+        public bool AgencyStatus { get; set; }
     }
 }

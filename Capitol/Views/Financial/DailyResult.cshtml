@@ -25,12 +25,12 @@
             <th>KREDİ KARTI (USD)</th>
         </tr>
         <tr>
-            <td><h1>@Model.TotalCashTL</h1></td>
-            <td><h1>@Model.TotalCashEURO</h1></td>
-            <td><h1>@Model.TotalCashUSD</h1></td>
-            <td><h1>@Model.TotalKreditTL</h1></td>
-            <td><h1>@Model.TotalKreditEURO</h1></td>
-            <td><h1>@Model.TotalKreditUSD</h1></td>
+            <td><h1>@Model.TotalCashTL!.Value.ToString("0.00")</h1></td>
+            <td><h1>@Model.TotalCashEURO!.Value.ToString("0.00")</h1></td>
+            <td><h1>@Model.TotalCashUSD!.Value.ToString("0.00")</h1></td>
+            <td><h1>@Model.TotalKreditTL!.Value.ToString("0.00")</h1></td>
+            <td><h1>@Model.TotalKreditEURO!.Value.ToString("0.00")</h1></td>
+            <td><h1>@Model.TotalKreditUSD!.Value.ToString("0.00")</h1></td>
         </tr>
     </table>
 </div>

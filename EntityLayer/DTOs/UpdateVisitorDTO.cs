@@ -33,7 +33,7 @@ namespace EntityLayer.DTOs
         public Currency? VisitorPaymentCurrency { get; set; }
         public string? VisitorDescription { get; set; }
         public int? VisitorCount { get; set; }
-        public string? VisitorRezervation { get; set; }
+        public int? VisitorAgencyId { get; set; }
         public bool VisitorPaymentIsDone { get; set; }
         public DateTime? VisitorAddedDate { get; set; }
         public bool VisitorDontChangeRoom { get; set; }

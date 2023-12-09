@@ -106,15 +106,14 @@
             </div>
             <div class="column">
                 <div class="input-box">
-                    <label asp-for="VisitorRezervation">Rezervazyon Tipi</label>
+                    <label asp-for="VisitorAgencyId">Rezervazyon Tipi</label>
                     <div class="column">
                         <div class="select-box">
-                            <select asp-for="VisitorRezervation">
-                                <option selected disabled hidden>Rezervasyon</option>
-                                <option value="Agency1">Agency1</option>
-                                <option value="Agency2">Agency2</option>
-                                <option value="Agency3">Agency3</option>
-                                <option value="Agency4">Agency4</option>
+                            <select id="AgencySelector" asp-for="VisitorAgencyId">
+                                @if (Model.VisitorAgencyId == 0)
+                                {
+                                    <option selected disabled hidden>Rezervasyon</option>
+                                }
                             </select>
                         </div>
                     </div>
@@ -285,6 +284,23 @@
             let data = await fetch(url).then(data => data.json())
             return data;
         }
+
+        let AgencyList = document.getElementById("AgencySelector");
+        FetchApi("https://localhost:7121/Administration/GetAllAgencies").then(Agencies => {
+            Agencies.forEach(Agency => {
+                console.log(Agency)
+                let option = document.createElement("option");
+                option.value = Agency.agencyId;
+                option.text = Agency.agencyName;
+                AgencyList.appendChild(option)
+            })
+            if (@Model.VisitorAgencyId != 0) {
+                AgencyList.value = @Model.VisitorAgencyId;
+            }
+        })
+
+
+
         var oldCheckInDate = new Date(new Date(document.getElementById("CheckInDate").value).getFullYear(), new Date(document.getElementById("CheckInDate").value).getMonth() + 1, new Date(document.getElementById("CheckInDate").value).getDate()).getTime()
         var oldCheckOutDate = new Date(new Date(document.getElementById("CheckOutDate").value).getFullYear(), new Date(document.getElementById("CheckOutDate").value).getMonth() + 1, new Date(document.getElementById("CheckOutDate").value).getDate()).getTime()
         var oldRoomNumber = document.getElementById("RoomNumber").value;
@@ -303,15 +319,17 @@
             var startdate = $("input[name='VisitorStartDate']").val()
             var enddate = $("input[name='VisitorEndDate']").val()
             let error = "";
+            if (roomnumber == "Oda Numarası")
+                error += "<li>Oda numarası seçilmelidir.</li>";
+            if (name == false)
+                error += "<li>Rezervasyon ismi girilmelidir.</li>";
             if (startdate > enddate && enddate != "" && startdate != "")
                 error += "<li>Çıkış tarihi Giriş tarihinden önce olamaz.</li>";
             if (enddate == "")
                 error += "<li>Bitiş tarihi seçilmelidir.</li>";
             if (startdate == "")
                 error += "<li>Giriş tarihi seçilmelidi.r</li>";
-            if (name == false)
-                error += "<li>Rezervasyon ismi girilmelidir.</li>";
-            if (startdate == enddate)
+            if (startdate == enddate && startdate != "" && enddate != "")
                 error += "<li>Giriş ve Çıkış tarihi aynı olamaz.</li>";
             if ($("#DoPayment").is(':checked') == true && !(($(".roomPrice").val() != "" || $(".totalRoomPrice").val() != "") && $(".currency").val() != null))
                 error += "<li>Fiyat bilgileri girilmelidir.</li>";

@@ -11,6 +11,7 @@ namespace EntityLayer.DTOs
     public class VisitorDetailsDTO
     {
         public int VisitorId { get; set; }
+        public List<int> Rooms { get; set; }
         public List<VisitorProperty> VisitorProperties { get; set; }
         public int VisitorState { get; set; }
         public int VisitorLeftDays { get; set; }
@@ -22,7 +23,7 @@ namespace EntityLayer.DTOs
         public int VisitorRoomNumber { get; set; }
         public int VisitorTotalVisitDay { get; set; }
         public Currency? VisitorPaymentCurrency { get; set; }
-        public string? VisitorRezervation { get; set; }
+        public string? VisitorAgencyName { get; set; }
         public string VisitorDescription { get; set; }
         public int? VisitorCount { get; set; }
         public bool VisitorPaymentIsDone { get; set; } = false;

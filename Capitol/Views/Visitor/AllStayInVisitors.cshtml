@@ -1,0 +1,50 @@
+﻿@model List<AllVisitorDTO>
+
+<div class="d-flex justify-content-evenly align-items-center my-2">
+    <div style="border-radius:20px;" class="shadow-sm px-5">
+        <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">Konaklayan Müşteriler</span>
+    </div>
+</div>
+<div class="container d-flex justify-content-center mt-5">
+    <table class="table table-bordered table-hover border border-3 border-dark shadow">
+        <thead>
+            <tr>
+                <th>Adı</th>
+                <th>Soyadı</th>
+                <th>Rezervasyon</th>
+                <th>Kişi Sayısı</th>
+                <th>Oda No</th>
+                <th>Giriş Tarihi</th>
+                <th>Durum</th>
+                <th>Çıkış Tarihi</th>
+                <th>Toplam Gün</th>
+                <th>Günlük</th>
+                <th>Toplam Ödeme</th>
+                <th>Not</th>
+                <th>Ödeme</th>
+                <th>Detay</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var visitor in Model)
+            {
+                <tr>
+                    <td>@visitor.VisitorName</td>
+                    <td>@visitor.VisitorSurName</td>
+                    <td>@visitor.VisitorRezervation</td>
+                    <td>@visitor.VisitorCount</td>
+                    <td>@visitor.VisitorRoomNumber</td>
+                    <td>@visitor.VisitorStartDate.ToString("MMMM d")</td>
+                    <td style="color: white; background-image: linear-gradient(#82CD47,#54B435) ">Otelde</td>
+                    <td>@visitor.VisitorEndDate.ToString("MMMM d")</td>
+                    <td>@visitor.VisitorTotalVisitDay</td>
+                    <td>@(visitor.VisitorRoomPrice ==null ? "  " : visitor.VisitorRoomPrice.Value.ToString("0.00"))  @(visitor.VisitorPaymentCurrency == null ? "  ":visitor.VisitorPaymentCurrency.ToString() == "EURO" ? "€" : visitor.VisitorPaymentCurrency.ToString() == "USD" ? "$" : visitor.VisitorPaymentCurrency.ToString() == "TL" ? "₺" : "")</td>
+                    <td>@(visitor.VisitorTotalPrice==null ? "  " : visitor.VisitorTotalPrice.Value.ToString("0.00")) @(visitor.VisitorPaymentCurrency == null ? "  ":visitor.VisitorPaymentCurrency.ToString() == "EURO" ? "€" : visitor.VisitorPaymentCurrency.ToString() == "USD" ? "$" : visitor.VisitorPaymentCurrency.ToString() == "TL" ? "₺" : "")</td>
+                    <td>@(visitor.VisitorDescription != null ? "Var":"Yok")</td>
+                    <td style=" width:1px; "><img style="height: 100%; width: 100%; border-radius:10px;" src="@(visitor.VisitorPaymentIsDone==false ?"/Images/cross.jpg":"/Images/thick.jpg")" /></td>
+                    <td><a class="btn btn-dark text-white" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-visitorId="@visitor.VisitorId">Detay</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -22,7 +22,7 @@ namespace EntityLayer.DTOs
         public DateTime VisitorEndDate { get; set; }
         public Currency? VisitorPaymentCurrency { get; set; }
         public string? VisitorDescription { get; set; }
-        public string? VisitorRezervation { get; set; }
+        public int? VisitorAgencyId { get; set; }
         public double? VisitorTotalRoomPrice { get; set; }
         public int? VisitorCount { get; set; }
         public DateTime? VisitorAddedDate { get; set; } = DateTime.Now;

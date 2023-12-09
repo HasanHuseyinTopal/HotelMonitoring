@@ -1,0 +1,24 @@
+﻿@model List<CrashedVisitorsDTO>
+
+<div class="d-flex justify-content-evenly align-items-center my-2">
+    <div style="border-radius:20px;" class="shadow-sm px-5">
+        <span class="text-black" style="font-size:xx-large; font-weight:600; font-size:50px;">Çakışanlar</span>
+    </div>
+</div>
+<div class="container mt-5">
+    <table class="table table-bordered table-hover border border-3 border-dark shadow">
+        <tr>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Detay</th>
+        </tr>
+        @foreach (var visitor in Model)
+        {
+            <tr>
+                <td>@visitor.VisitorName</td>
+                <td>@visitor.VisitorSurname</td>
+                <td><a class="btn btn-dark btn-lg" asp-controller="Visitor" asp-action="SelectedVisitors" asp-route-visitorId="@visitor.VisitorId">Detay</a></td>
+            </tr>
+        }
+    </table>
+</div>

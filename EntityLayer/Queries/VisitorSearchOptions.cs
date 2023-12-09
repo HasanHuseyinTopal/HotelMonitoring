@@ -14,5 +14,6 @@ namespace EntityLayer.Queries
         public DateTime? VisitorStartDate { get; set; }
         public DateTime? VisitorEndDate { get; set; }
         public int? VisitorRoomNumber { get; set; }
+        public int PageNumber { get; set; }
     }
 }
