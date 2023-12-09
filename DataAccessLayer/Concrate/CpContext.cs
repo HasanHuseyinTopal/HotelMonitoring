@@ -54,6 +54,13 @@ namespace DataAccessLayer.Concrate
                 new Room(){RoomId=23, RoomIsClean=true,RoomNumber=701,RoomState=false},
                 new Room(){RoomId=24, RoomIsClean=true,RoomNumber=702,RoomState=false}
             });
+            modelBuilder.Entity<Agency>().HasData(new List<Agency>()
+            {
+                new Agency() { AgencyId = 1, AgencyName = "Agency 1", AgencyStatus = true},
+                new Agency() { AgencyId = 2, AgencyName = "Agency 2", AgencyStatus = true},
+                new Agency() { AgencyId = 3, AgencyName = "Agency 3", AgencyStatus = true},
+                new Agency() { AgencyId = 4, AgencyName = "Agency 4", AgencyStatus = true}
+            });
             base.OnModelCreating(modelBuilder);
         }
         public DbSet<Visitor> Visitors { get; set; }
